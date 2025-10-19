@@ -37,32 +37,40 @@ export default function AdminLoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/admin/dashboard');
-    } catch (error: any) {
-        if (error instanceof FirebaseError && error.code === 'auth/user-not-found') {
-            // If user does not exist, try to create it
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                toast({
-                    title: 'Admin Account Created',
-                    description: "Your admin account has been created. You are now logged in.",
-                });
-                router.push('/admin/dashboard');
-            } catch (createError: any) {
-                 toast({
-                    variant: 'destructive',
-                    title: 'Creation Failed',
-                    description: `Could not create admin account: ${createError.message}`,
-                });
-            }
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Login Failed',
-                description: error.message,
-            });
+    } catch (error) {
+      if (error instanceof FirebaseError && error.code === 'auth/user-not-found') {
+        // User not found, so create a new user account
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          toast({
+              title: 'Admin Account Created',
+              description: "Your admin account has been created. You are now logged in.",
+          });
+          // The onAuthStateChanged listener in the provider will handle the redirect
+        } catch (createError: any) {
+          toast({
+            variant: 'destructive',
+            title: 'Creation Failed',
+            description: `Could not create admin account: ${createError.message}`,
+          });
         }
+      } else if (error instanceof FirebaseError) {
+        // Handle other Firebase errors
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: error.message,
+        });
+      } else {
+        // Handle non-Firebase errors
+        toast({
+          variant: 'destructive',
+          title: 'An Error Occurred',
+          description: 'An unexpected error occurred during login.',
+        });
+      }
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
