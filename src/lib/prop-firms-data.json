@@ -1,0 +1,82 @@
+[
+  {
+    "id": "topstep",
+    "name": "Topstep",
+    "type": "Futures",
+    "review": { "rating": 4.7, "count": 2500 },
+    "yearsInBusiness": 10,
+    "maxAllocation": 150000,
+    "platform": ["Tradovate", "TradingView", "NinjaTrader"],
+    "referralLink": "https://www.topstep.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "Reach a 6% profit target to pass." },
+      { "title": "Daily Loss Limit", "description": "Do not hit or exceed your Daily Loss Limit." },
+      { "title": "Maximum Drawdown", "description": "Maintain your account balance above the Maximum Drawdown." }
+    ]
+  },
+  {
+    "id": "ftmo",
+    "name": "FTMO",
+    "type": "Forex",
+    "review": { "rating": 4.9, "count": 8000 },
+    "yearsInBusiness": 8,
+    "maxAllocation": 200000,
+    "platform": ["MT4", "MT5", "cTrader"],
+    "referralLink": "https://ftmo.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "10% profit target for Step 1, 5% for Step 2." },
+      { "title": "Max Daily Loss", "description": "5% of initial account balance." },
+      { "title": "Max Loss", "description": "10% of initial account balance." }
+    ]
+  },
+  {
+    "id": "apex-trader-funding",
+    "name": "Apex Trader Funding",
+    "type": "Futures",
+    "review": { "rating": 4.8, "count": 12000 },
+    "yearsInBusiness": 3,
+    "maxAllocation": 300000,
+    "platform": ["Rithmic", "Tradovate"],
+    "referralLink": "https://apextraderfunding.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "Reach a 6% profit target to pass." },
+      { "title": "Trailing Threshold Drawdown", "description": "Trailing drawdown that stops once it hits the initial balance + $100." }
+    ]
+  },
+  {
+    "id": "the-funded-trader",
+    "name": "The Funded Trader",
+    "type": "Forex",
+    "review": { "rating": 4.6, "count": 9500 },
+    "yearsInBusiness": 3,
+    "maxAllocation": 400000,
+    "platform": ["MT4", "MT5"],
+    "referralLink": "https://thefundedtraderprogram.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target (Phase 1)", "description": "10% for Standard and Rapid challenges." },
+      { "title": "Profit Target (Phase 2)", "description": "5% for Standard and Rapid challenges." },
+      { "title": "Daily Drawdown", "description": "5% of initial balance." },
+      { "title": "Max Drawdown", "description": "10% of initial balance (Standard), 8% (Rapid)." }
+    ]
+  },
+  {
+    "id": "bulenox",
+    "name": "Bullenox",
+    "type": "Futures",
+    "review": { "rating": 4.5, "count": 1800 },
+    "yearsInBusiness": 2,
+    "maxAllocation": 250000,
+    "platform": ["Rithmic", "Tradovate", "NinjaTrader"],
+    "referralLink": "https://bulenox.com/",
+    "promoCode": "CHECK",
+    "rules": [
+        { "title": "Profit Target", "description": "Varies by account size, typically around 6%." },
+        { "title": "Daily Loss Limit", "description": "Do not hit or exceed the daily loss limit." },
+        { "title": "Trailing Drawdown", "description": "Account will be liquidated if the trailing drawdown is hit." }
+    ]
+  }
+]
