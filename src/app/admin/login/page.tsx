@@ -20,7 +20,8 @@ export default function AdminLoginPage() {
   const { toast } = useToast();
   const [email, setEmail] = useState('jallowebrima7@gmail.com');
   const [password, setPassword] = useState('Lhooq123!');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
   if (isUserLoading) {
     return <div>Loading...</div>;
@@ -31,46 +32,41 @@ export default function AdminLoginPage() {
     return null;
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleSignIn = async () => {
+    setIsSigningIn(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/admin/dashboard');
     } catch (error) {
-      if (error instanceof FirebaseError && error.code === 'auth/user-not-found') {
-        // User not found, so create a new user account
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-          toast({
-              title: 'Admin Account Created',
-              description: "Your admin account has been created. You are now logged in.",
-          });
-          // The onAuthStateChanged listener in the provider will handle the redirect
-        } catch (createError: any) {
-          toast({
-            variant: 'destructive',
-            title: 'Creation Failed',
-            description: `Could not create admin account: ${createError.message}`,
-          });
-        }
-      } else if (error instanceof FirebaseError) {
-        // Handle other Firebase errors
+        const firebaseError = error as FirebaseError;
         toast({
           variant: 'destructive',
           title: 'Login Failed',
-          description: error.message,
+          description: firebaseError.message || 'An unexpected error occurred.',
         });
-      } else {
-        // Handle non-Firebase errors
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
+
+  const handleCreateAccount = async () => {
+    setIsCreatingAccount(true);
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      toast({
+        title: 'Admin Account Created',
+        description: "Your admin account has been created. You are now logged in.",
+      });
+      // The onAuthStateChanged listener in the provider will handle the redirect
+    } catch (error) {
+        const firebaseError = error as FirebaseError;
         toast({
           variant: 'destructive',
-          title: 'An Error Occurred',
-          description: 'An unexpected error occurred during login.',
+          title: 'Creation Failed',
+          description: firebaseError.message || 'Could not create admin account.',
         });
-      }
     } finally {
-      setIsLoading(false);
+      setIsCreatingAccount(false);
     }
   };
 
@@ -81,10 +77,10 @@ export default function AdminLoginPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl">Admin Login</CardTitle>
-            <CardDescription>Enter your credentials to access the dashboard. The first login will create the admin account.</CardDescription>
+            <CardDescription>Enter your credentials to access the dashboard. If you are the first admin, create an account.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -106,10 +102,15 @@ export default function AdminLoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing In...' : 'Sign In'}
-              </Button>
-            </form>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button onClick={handleSignIn} className="w-full" disabled={isSigningIn || isCreatingAccount}>
+                  {isSigningIn ? 'Signing In...' : 'Sign In'}
+                </Button>
+                <Button onClick={handleCreateAccount} variant="secondary" className="w-full" disabled={isSigningIn || isCreatingAccount}>
+                  {isCreatingAccount ? 'Creating...' : 'Create Admin Account'}
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
