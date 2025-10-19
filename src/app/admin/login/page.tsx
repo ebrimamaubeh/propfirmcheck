@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -23,20 +23,21 @@ export default function AdminLoginPage() {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
-  if (isUserLoading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.replace('/admin/dashboard');
+    }
+  }, [user, isUserLoading, router]);
 
-  if (user) {
-    router.replace('/admin/dashboard');
-    return null;
+  if (isUserLoading || user) {
+    return <div>Loading...</div>;
   }
 
   const handleSignIn = async () => {
     setIsSigningIn(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/admin/dashboard');
+      // The useEffect will handle the redirect
     } catch (error) {
         const firebaseError = error as FirebaseError;
         toast({
@@ -57,7 +58,7 @@ export default function AdminLoginPage() {
         title: 'Admin Account Created',
         description: "Your admin account has been created. You are now logged in.",
       });
-      // The onAuthStateChanged listener in the provider will handle the redirect
+      // The useEffect will handle the redirect after state update
     } catch (error) {
         const firebaseError = error as FirebaseError;
         toast({
