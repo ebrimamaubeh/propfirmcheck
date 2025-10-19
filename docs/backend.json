@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "PropFirm": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PropFirm",
+      "type": "object",
+      "description": "Represents a prop firm with its key attributes.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Prop Firm."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the prop firm."
+        },
+        "reviews": {
+          "type": "number",
+          "description": "The average review score of the prop firm (e.g., 4.2 stars)."
+        },
+        "yearsInBusiness": {
+          "type": "number",
+          "description": "The number of years the prop firm has been in business."
+        },
+        "maxAllocation": {
+          "type": "number",
+          "description": "The maximum capital allocation offered by the prop firm (e.g., 200000)."
+        },
+        "platform": {
+          "type": "string",
+          "description": "The primary trading platform used by the prop firm (e.g., Tradovate)."
+        },
+        "rules": {
+          "type": "string",
+          "description": "A brief description of the rules of the prop firm."
+        },
+        "tradingPlatforms": {
+          "type": "array",
+          "description": "The names of the various trading platforms used by the prop firm.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "referralLink": {
+          "type": "string",
+          "description": "The referral link for the prop firm."
+        },
+        "firmType": {
+          "type": "string",
+          "description": "The type of the prop firm, either 'forex' or 'futures'."
+        },
+        "promoCode": {
+          "type": "string",
+          "description": "The promo code associated with the prop firm.",
+          "format": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "reviews",
+        "yearsInBusiness",
+        "maxAllocation",
+        "platform",
+        "rules",
+        "tradingPlatforms",
+        "referralLink",
+        "firmType",
+        "promoCode"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/prop_firms/{propFirmId}",
+        "definition": {
+          "entityName": "PropFirm",
+          "schema": {
+            "$ref": "#/backend/entities/PropFirm"
+          },
+          "description": "Collection of prop firm documents. Each document represents a single prop firm and contains all its details (name, reviews, years in business, max allocation, platform, rules, trading platforms, referral link, firm type, and promo code).",
+          "params": [
+            {
+              "name": "propFirmId",
+              "description": "The unique identifier for the prop firm."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Given the application requirements for a prop firm directory, and the emphasis on a UI-driven application with data fetched from a JSON file, a Firestore database is not strictly necessary. However, if Firestore were to be used for potential future scalability or dynamic updates, the following structure would be appropriate. Since this application primarily focuses on displaying and filtering prop firm data, a single collection to store prop firm documents is sufficient. The key principle here is structural segregation; all documents in the `prop_firms` collection share the same security posture (i.e., they are all publicly readable). \n\nTo support filtering by firm type (Forex/Futures), the `firmType` field from the PropFirm schema is leveraged. The QAP here is straightforward: `list` operations are inherently secure because there are no nuanced access control requirements; all documents in the `prop_firms` collection are intended to be publicly accessible.\n\nAuthorization Independence is less of a concern in this specific scenario because there's no user-specific data or complex access control. If the application were to evolve to include user reviews, favorites, or other user-generated content associated with prop firms, a different structure with denormalized authorization data would become necessary."
+  }
+}
