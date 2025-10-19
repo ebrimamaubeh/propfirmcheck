@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ReactMarkdown from 'react-markdown';
+import { useEffect, useState } from 'react';
 
 export default function BlogPostPage() {
   const { slug } = useParams() as { slug: string };
@@ -25,19 +26,33 @@ export default function BlogPostPage() {
   }, [firestore, slug]);
   
   const { data: posts, isLoading } = useCollection<BlogPost>(postQuery);
-  const post = posts?.[0];
+  const [post, setPost] = useState<BlogPost | null | undefined>(undefined);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoading) {
+      setPost(posts?.[0]);
+    }
+  }, [posts, isLoading]);
+
+  if (isLoading || post === undefined) {
     return (
         <>
             <Header />
             <main className="flex-1 py-12 md:py-20">
                 <div className="container max-w-3xl">
-                    <Skeleton className="h-8 w-3/4 mb-4" />
+                    <div className="mb-8">
+                        <Skeleton className="h-10 w-40" />
+                    </div>
+                    <Skeleton className="h-12 w-3/4 mb-4" />
                     <Skeleton className="h-6 w-1/2 mb-8" />
-                    <Skeleton className="h-4 w-full mb-4" />
-                    <Skeleton className="h-4 w-full mb-4" />
-                    <Skeleton className="h-4 w-2/3 mb-4" />
+                    <Card>
+                        <CardContent className="py-6 space-y-4">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-2/3" />
+                        </CardContent>
+                    </Card>
                 </div>
             </main>
             <Footer />
@@ -45,7 +60,7 @@ export default function BlogPostPage() {
     );
   }
 
-  if (!post) {
+  if (post === null) {
     notFound();
   }
 
