@@ -1,28 +1,27 @@
 /**
- * @fileOverview Firestore Security Rules for the Prop Firm Directory.
+ * @fileoverview Firestore Security Rules for the prop firm directory application.
  *
  * Core Philosophy:
- * This ruleset prioritizes public readability of prop firm data while restricting write access.
- * This supports the application's primary function as a directory or listing service.
+ * This ruleset allows public read access to all prop firm documents. Write access is not granted.
  *
  * Data Structure:
- * The application uses a single top-level collection `/prop_firms/{propFirmId}` to store prop firm documents.
+ * All data is stored in the top-level `/prop_firms/{propFirmId}` collection.
  *
  * Key Security Decisions:
- * - `list` operations are open to the public, as all documents within the `/prop_firms` collection are intended to be publicly visible.
- * - `get` operations are open to the public.
- * - Write operations (create, update, delete) are disallowed for all users. This is a critical security measure. If write access is needed in the future, the rules must be updated to include appropriate authorization checks (e.g., using a role-based access control system or an admin role).
+ * - User listing is not supported.
+ * - All prop firm data is considered public; therefore, read access is open.
+ * - Write access is denied to all users.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants public read access to prop firm data while denying all write operations.
+     * @description Grants public read access to prop firm documents. Write access is denied.
      * @path /prop_firms/{propFirmId}
-     * @allow (get, list) Any user can retrieve or list prop firm documents.
-     * @deny (create, update, delete) No user can create, update, or delete prop firm documents.
-     * @principle Allows public read access for directory purposes and enforces write restrictions.
+     * @allow (get, list): Any user can read prop firm data.
+     * @deny (create, update, delete): No user can create, update, or delete prop firm data.
+     * @principle Allows public reads for all documents in the prop_firms collection.
      */
     match /prop_firms/{propFirmId} {
       allow get, list: if true;

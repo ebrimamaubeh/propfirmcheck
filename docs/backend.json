@@ -68,6 +68,44 @@
         "firmType",
         "promoCode"
       ]
+    },
+    "BlogPost": {
+      "title": "Blog Post",
+      "type": "object",
+      "description": "Represents a single blog post.",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the blog post."
+        },
+        "slug": {
+          "type": "string",
+          "description": "The URL-friendly slug for the blog post."
+        },
+        "content": {
+          "type": "string",
+          "description": "The full content of the blog post in Markdown format."
+        },
+        "author": {
+          "type": "string",
+          "description": "The name of the post's author."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the blog post."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the post was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the post was last updated."
+        }
+      },
+      "required": ["title", "slug", "content", "author", "category", "createdAt", "updatedAt"]
     }
   },
   "auth": {
@@ -93,8 +131,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/blogPosts/{postId}",
+        "definition": {
+          "entityName": "BlogPost",
+          "schema": {
+            "$ref": "#/backend/entities/BlogPost"
+          },
+          "description": "Collection of blog posts for the website.",
+          "params": [
+            {
+              "name": "postId",
+              "description": "The unique identifier for the blog post."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "Given the application requirements for a prop firm directory, and the emphasis on a UI-driven application with data fetched from a JSON file, a Firestore database is not strictly necessary. However, if Firestore were to be used for potential future scalability or dynamic updates, the following structure would be appropriate. Since this application primarily focuses on displaying and filtering prop firm data, a single collection to store prop firm documents is sufficient. The key principle here is structural segregation; all documents in the `prop_firms` collection share the same security posture (i.e., they are all publicly readable). \n\nTo support filtering by firm type (Forex/Futures), the `firmType` field from the PropFirm schema is leveraged. The QAP here is straightforward: `list` operations are inherently secure because there are no nuanced access control requirements; all documents in the `prop_firms` collection are intended to be publicly accessible.\n\nAuthorization Independence is less of a concern in this specific scenario because there's no user-specific data or complex access control. If the application were to evolve to include user reviews, favorites, or other user-generated content associated with prop firms, a different structure with denormalized authorization data would become necessary."
+    "reasoning": "Given the application requirements for a prop firm directory, and the emphasis on a UI-driven application with data fetched from a JSON file, a Firestore database is not strictly necessary. However, if Firestore were to be used for potential future scalability or dynamic updates, the following structure would be appropriate. Since this application primarily focuses on displaying and filtering prop firm data, a single collection to store prop firm documents is sufficient. The key principle here is structural segregation; all documents in the `prop_firms` collection share the same security posture (i.e., they are all publicly readable). \n\nTo support filtering by firm type (Forex/Futures), the `firmType` field from the PropFirm schema is leveraged. The QAP here is straightforward: `list` operations are inherently secure because there are no nuanced access control requirements; all documents in the `prop_firms` collection are intended to be publicly accessible.\n\nAuthorization Independence is less of a concern in this specific scenario because there's no user-specific data or complex access control. If the application were to evolve to include user reviews, favorites, or other user-generated content associated with prop firms, a different structure with denormalized authorization data would become necessary. The new `blogPosts` collection will store all blog articles. Security rules will be configured to allow public read access, while create, update, and delete operations will be restricted to authenticated users, ensuring only administrators can manage content."
   }
 }

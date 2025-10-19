@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export type PropFirm = {
   id: string;
   name: string;
@@ -15,4 +17,15 @@ export type PropFirm = {
     title: string;
     description: string;
   }[];
+};
+
+export type BlogPost = {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  author: string;
+  category: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 };
