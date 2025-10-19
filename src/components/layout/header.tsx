@@ -9,24 +9,21 @@ export function Header() {
         <div className="mr-4 flex items-center">
           <Link href="/" className="flex items-center space-x-2">
             <Building className="h-6 w-6 text-primary" />
-            <span className="font-bold font-headline">Prop Firm Finder</span>
+            <span className="font-bold font-headline">Prop Firm Check</span>
           </Link>
         </div>
         <nav className="flex flex-1 items-center space-x-2 sm:space-x-4 justify-end">
           <Button variant="ghost" asChild size="sm">
-            <a href="https://www.tradingview.com" target="_blank" rel="noopener noreferrer">
-              TradingView
-            </a>
+            <Link href="/">Home</Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <a href="https://www.investopedia.com" target="_blank" rel="noopener noreferrer">
-              Investopedia
-            </a>
+            <Link href="/about">About</Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <a href="https://www.babypips.com" target="_blank" rel="noopener noreferrer">
-              Babypips
-            </a>
+            <Link href="/contact">Contact</Link>
+          </Button>
+          <Button variant="ghost" asChild size="sm">
+            <Link href="/blog">Blog</Link>
           </Button>
         </nav>
       </div>

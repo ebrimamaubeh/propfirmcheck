@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Prop Firm Finder',
+  title: 'Prop Firm Check',
   description: 'The Prop firm that best matches you',
 };
 

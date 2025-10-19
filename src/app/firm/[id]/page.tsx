@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import propFirmsData from '@/lib/prop-firms-data.json';
@@ -7,7 +8,7 @@ import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowUpRight, CheckCircle } from 'lucide-react';
+import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
 
@@ -48,6 +49,14 @@ export default function FirmDetailsPage({ params }: Props) {
       <Header />
       <main className="flex-1 py-12 md:py-20">
         <div className="container">
+          <div className="mb-8">
+            <Button asChild variant="outline">
+              <Link href="/">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to List
+              </Link>
+            </Button>
+          </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2 space-y-8">
               <Card>
