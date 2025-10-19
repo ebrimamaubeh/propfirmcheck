@@ -1,11 +1,21 @@
+'use client'
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import PropFirmTable from '@/components/prop-firm-table';
-import propFirmsData from '@/lib/prop-firms-data.json';
 import type { PropFirm } from '@/lib/types';
+import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
-  const firms: PropFirm[] = propFirmsData;
+  const firestore = useFirestore();
+
+  const firmsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'prop_firms'));
+  }, [firestore]);
+  
+  const { data: firms, isLoading } = useCollection<PropFirm>(firmsQuery);
 
   return (
     <>
@@ -21,7 +31,14 @@ export default function Home() {
         </section>
 
         <section className="container py-12 md:py-20 flex justify-center">
-          <PropFirmTable firms={firms} />
+          {isLoading || !firms ? (
+            <div className="w-full space-y-4">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-40 w-full" />
+            </div>
+          ) : (
+            <PropFirmTable firms={firms} />
+          )}
         </section>
       </main>
       <Footer />

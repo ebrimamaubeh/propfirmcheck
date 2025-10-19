@@ -1,7 +1,9 @@
+'use client'
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import type { Metadata } from 'next';
-import propFirmsData from '@/lib/prop-firms-data.json';
+import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import type { PropFirm } from '@/lib/types';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -11,34 +13,49 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
+import { Skeleton } from '@/components/ui/skeleton';
 
-type Props = {
-  params: { id: string };
-};
+// Metadata can't be dynamic in a client component, but we can set a generic one.
+// For dynamic metadata, you'd need a separate generateMetadata function with data fetching.
+// export const metadata: Metadata = {
+//   title: 'Prop Firm Details',
+// };
 
-const firms: PropFirm[] = propFirmsData;
+export default function FirmDetailsPage() {
+  const params = useParams();
+  const id = params.id as string;
+  const firestore = useFirestore();
 
-export function generateStaticParams() {
-  return firms.map((firm) => ({
-    id: firm.id,
-  }));
-}
+  const firmRef = useMemoFirebase(() => {
+    if (!firestore || !id) return null;
+    return doc(firestore, 'prop_firms', id);
+  }, [firestore, id]);
 
-export function generateMetadata({ params }: Props): Metadata {
-  const firm = firms.find((p) => p.id === params.id);
-  if (!firm) {
-    return {
-      title: 'Firm Not Found',
-    };
+  const { data: firm, isLoading } = useDoc<PropFirm>(firmRef);
+
+  if (isLoading) {
+    return (
+        <>
+            <Header />
+            <main className="flex-1 py-12 md:py-20">
+                <div className="container">
+                    <Skeleton className="h-10 w-40 mb-8" />
+                    <div className="grid md:grid-cols-3 gap-8">
+                        <div className="md:col-span-2 space-y-8">
+                            <Skeleton className="h-48 w-full" />
+                            <Skeleton className="h-64 w-full" />
+                        </div>
+                        <div className="space-y-6">
+                            <Skeleton className="h-48 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <Footer />
+        </>
+    )
   }
-  return {
-    title: `${firm.name} | Prop Firm Details`,
-    description: `Rules, platforms, and promo code for ${firm.name}.`,
-  };
-}
-
-export default function FirmDetailsPage({ params }: Props) {
-  const firm = firms.find((p) => p.id === params.id);
 
   if (!firm) {
     notFound();
