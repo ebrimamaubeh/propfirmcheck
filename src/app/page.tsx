@@ -20,7 +20,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="container py-12 md:py-20">
+        <section className="container py-12 md:py-20 flex justify-center">
           <PropFirmTable firms={firms} />
         </section>
       </main>

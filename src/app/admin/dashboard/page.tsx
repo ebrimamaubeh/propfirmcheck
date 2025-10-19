@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, useUser, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, deleteDoc, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -27,6 +27,30 @@ import {
 } from "@/components/ui/alert-dialog"
 
 
+const samplePosts = [
+    {
+      title: 'Getting Started with Futures Trading',
+      slug: 'getting-started-with-futures-trading',
+      content: 'Futures trading can be complex, but with the right foundation, you can navigate the markets. This post covers the basics of futures contracts, leverage, and risk management.\n\n## Understanding Futures\n\nA futures contract is a legal agreement to buy or sell a particular commodity or financial instrument at a predetermined price at a specified time in the future.',
+      author: 'Admin',
+      category: 'Futures',
+    },
+    {
+      title: 'Forex vs Futures: Which is Right for You?',
+      slug: 'forex-vs-futures',
+      content: 'Deciding between Forex and Futures trading depends on your style, risk tolerance, and goals. \n\n## Key Differences\n\n- **Market Hours**: Forex is a 24/5 market, while futures have specific trading sessions.\n- **Regulation**: Futures are traded on centralized exchanges, offering more transparency.',
+      author: 'Admin',
+      category: 'Trading',
+    },
+    {
+      title: 'Top 3 Mistakes to Avoid in Prop Trading',
+      slug: 'top-3-mistakes-prop-trading',
+      content: 'Proprietary trading offers incredible opportunities, but pitfalls exist. \n\n### 1. Overleveraging\n\nUsing too much leverage is the quickest way to blow an account. Always respect your risk parameters.\n\n### 2. Ignoring the Rules\n\nEvery prop firm has rules. Violating them means losing your funded account. Know them inside and out.',
+      author: 'Admin',
+      category: 'Prop Firms',
+    },
+];
+
 export default function AdminDashboardPage() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
@@ -40,6 +64,31 @@ export default function AdminDashboardPage() {
   }, [firestore]);
 
   const { data: posts, isLoading } = useCollection<BlogPost>(blogPostsQuery);
+
+  const seedDatabase = async () => {
+    if (!firestore) return;
+    try {
+        const batch = writeBatch(firestore);
+        const postsCollection = collection(firestore, 'blogPosts');
+        
+        samplePosts.forEach(post => {
+            const docRef = doc(postsCollection);
+            batch.set(docRef, { ...post, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+        });
+
+        await batch.commit();
+        toast({
+            title: 'Success',
+            description: 'Sample blog posts have been added.',
+        });
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to seed database: ' + error.message,
+        });
+    }
+  };
 
   if (isUserLoading || isLoading) {
     return <div>Loading dashboard...</div>;
@@ -106,43 +155,56 @@ export default function AdminDashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {posts && posts.map(post => (
-                    <TableRow key={post.id}>
-                      <TableCell className="font-medium">{post.title}</TableCell>
-                      <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
-                      <TableCell>{post.author}</TableCell>
-                      <TableCell>{format(post.createdAt.toDate(), 'PPpp')}</TableCell>
-                      <TableCell className="text-right">
-                        <Button asChild variant="ghost" size="icon">
-                            <Link href={`/admin/dashboard/edit?id=${post.id}`}>
-                                <Edit className="h-4 w-4" />
-                            </Link>
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the post.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(post.id)}>Continue</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                  {posts && posts.length > 0 ? (
+                    posts.map(post => (
+                      <TableRow key={post.id}>
+                        <TableCell className="font-medium">{post.title}</TableCell>
+                        <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
+                        <TableCell>{post.author}</TableCell>
+                        <TableCell>{format(post.createdAt.toDate(), 'PPpp')}</TableCell>
+                        <TableCell className="text-right">
+                          <Button asChild variant="ghost" size="icon">
+                              <Link href={`/admin/dashboard/edit?id=${post.id}`}>
+                                  <Edit className="h-4 w-4" />
+                              </Link>
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently delete the post.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(post.id)}>Continue</AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-24 text-center">
+                        <p className="mb-4">No posts yet.</p>
+                        <Button onClick={seedDatabase}>Add Sample Posts</Button>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
-              {!posts?.length && <p className="text-center py-8 text-muted-foreground">No posts yet.</p>}
+              {posts && posts.length > 0 && (
+                <div className="mt-4 flex justify-center">
+                    <Button onClick={seedDatabase} variant="outline">Add More Sample Posts</Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
