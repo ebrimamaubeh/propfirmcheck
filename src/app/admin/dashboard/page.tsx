@@ -27,30 +27,38 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useEffect } from 'react';
 
+function slugify(text: string) {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
 
 const samplePosts = [
     {
       title: 'Getting Started with Futures Trading',
-      slug: 'getting-started-with-futures-trading',
       content: 'Futures trading can be complex, but with the right foundation, you can navigate the markets. This post covers the basics of futures contracts, leverage, and risk management.\n\n## Understanding Futures\n\nA futures contract is a legal agreement to buy or sell a particular commodity or financial instrument at a predetermined price at a specified time in the future.',
       author: 'Admin',
       category: 'Futures',
     },
     {
       title: 'Forex vs Futures: Which is Right for You?',
-      slug: 'forex-vs-futures',
       content: 'Deciding between Forex and Futures trading depends on your style, risk tolerance, and goals. \n\n## Key Differences\n\n- **Market Hours**: Forex is a 24/5 market, while futures have specific trading sessions.\n- **Regulation**: Futures are traded on centralized exchanges, offering more transparency.',
       author: 'Admin',
       category: 'Trading',
     },
     {
       title: 'Top 3 Mistakes to Avoid in Prop Trading',
-      slug: 'top-3-mistakes-prop-trading',
       content: 'Proprietary trading offers incredible opportunities, but pitfalls exist. \n\n### 1. Overleveraging\n\nUsing too much leverage is the quickest way to blow an account. Always respect your risk parameters.\n\n### 2. Ignoring the Rules\n\nEvery prop firm has rules. Violating them means losing your funded account. Know them inside and out.',
       author: 'Admin',
       category: 'Prop Firms',
     },
-];
+].map(post => ({...post, slug: slugify(post.title)}));
+
 
 export default function AdminDashboardPage() {
   const auth = useAuth();
@@ -97,10 +105,6 @@ export default function AdminDashboardPage() {
     }
   };
 
-  if (isUserLoading || isLoading || !user) {
-    return <div>Loading dashboard...</div>;
-  }
-  
   const handleDelete = async (postId: string) => {
     if (!firestore) return;
     try {
@@ -118,7 +122,10 @@ export default function AdminDashboardPage() {
     }
   };
 
-
+  if (isUserLoading || isLoading || (!user && !isUserLoading)) {
+    return <div>Loading dashboard...</div>;
+  }
+  
   return (
     <>
       <Header />
@@ -136,7 +143,7 @@ export default function AdminDashboardPage() {
                   New Post
                 </Link>
               </Button>
-              <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>
+              {auth && <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>}
             </div>
           </div>
 
@@ -163,7 +170,7 @@ export default function AdminDashboardPage() {
                         <TableCell className="font-medium">{post.title}</TableCell>
                         <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
                         <TableCell>{post.author}</TableCell>
-                        <TableCell>{format(post.createdAt.toDate(), 'PPpp')}</TableCell>
+                        <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
                         <TableCell className="text-right">
                           <Button asChild variant="ghost" size="icon">
                               <Link href={`/admin/dashboard/edit?id=${post.id}`}>
