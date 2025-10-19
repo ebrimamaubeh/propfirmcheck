@@ -74,9 +74,162 @@
     "referralLink": "https://bulenox.com/",
     "promoCode": "CHECK",
     "rules": [
-        { "title": "Profit Target", "description": "Varies by account size, typically around 6%." },
-        { "title": "Daily Loss Limit", "description": "Do not hit or exceed the daily loss limit." },
-        { "title": "Trailing Drawdown", "description": "Account will be liquidated if the trailing drawdown is hit." }
+      { "title": "Profit Target", "description": "Varies by account size, typically around 6%." },
+      { "title": "Daily Loss Limit", "description": "Do not hit or exceed the daily loss limit." },
+      { "title": "Trailing Drawdown", "description": "Account will be liquidated if the trailing drawdown is hit." }
+    ]
+  },
+  {
+    "id": "leeloo-trading",
+    "name": "Leeloo Trading",
+    "type": "Futures",
+    "review": { "rating": 4.5, "count": 1500 },
+    "yearsInBusiness": 5,
+    "maxAllocation": 300000,
+    "platform": ["Rithmic", "Tradovate"],
+    "referralLink": "https://leelootrading.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "Varies by account size." },
+      { "title": "Trailing Drawdown", "description": "Calculated at the end of the trading day." }
+    ]
+  },
+  {
+    "id": "myforexfunds",
+    "name": "My Forex Funds",
+    "type": "Forex",
+    "review": { "rating": 4.9, "count": 15000 },
+    "yearsInBusiness": 2,
+    "maxAllocation": 300000,
+    "platform": ["MT4", "MT5"],
+    "referralLink": "https://myforexfunds.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "8% for Phase 1, 5% for Phase 2." },
+      { "title": "Daily Drawdown", "description": "5% of initial balance." },
+      { "title": "Max Drawdown", "description": "12% of initial balance." }
+    ]
+  },
+  {
+    "id": "oneup-trader",
+    "name": "OneUp Trader",
+    "type": "Futures",
+    "review": { "rating": 4.6, "count": 2200 },
+    "yearsInBusiness": 4,
+    "maxAllocation": 250000,
+    "platform": ["Rithmic", "Tradovate"],
+    "referralLink": "https://oneuptrader.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "Reach a 6% profit target." },
+      { "title": "Trailing Drawdown", "description": "Based on end-of-day balance." }
+    ]
+  },
+  {
+    "id": "true-forex-funds",
+    "name": "True Forex Funds",
+    "type": "Forex",
+    "review": { "rating": 4.7, "count": 4500 },
+    "yearsInBusiness": 2,
+    "maxAllocation": 400000,
+    "platform": ["MT4", "MT5"],
+    "referralLink": "https://trueforexfunds.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "8% in Phase 1, 5% in Phase 2." },
+      { "title": "Max Daily Loss", "description": "5% of initial balance." },
+      { "title": "Max Loss", "description": "10% of initial balance." }
+    ]
+  },
+  {
+    "id": "take-profit-trader",
+    "name": "Take Profit Trader",
+    "type": "Futures",
+    "review": { "rating": 4.4, "count": 900 },
+    "yearsInBusiness": 2,
+    "maxAllocation": 150000,
+    "platform": ["Rithmic", "Tradovate"],
+    "referralLink": "https://takeprofittrader.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "$3,000 on a $50K account." },
+      { "title": "Pro Drawdown", "description": "Drawdown updates on profit realization." }
+    ]
+  },
+  {
+    "id": "e8-funding",
+    "name": "E8 Funding",
+    "type": "Forex",
+    "review": { "rating": 4.8, "count": 6000 },
+    "yearsInBusiness": 2,
+    "maxAllocation": 300000,
+    "platform": ["MT4", "MT5"],
+    "referralLink": "https://e8funding.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "8% for Phase 1, 5% for Phase 2." },
+      { "title": "Max Daily Loss", "description": "5% based on previous day's balance." },
+      { "title": "Max Loss", "description": "8% fixed from initial deposit." }
+    ]
+  },
+  {
+    "id": "ticktick-trader",
+    "name": "TickTick Trader",
+    "type": "Futures",
+    "review": { "rating": 4.7, "count": 3000 },
+    "yearsInBusiness": 3,
+    "maxAllocation": 100000,
+    "platform": ["Rithmic", "Tradovate"],
+    "referralLink": "https://tickticktrader.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "6% profit goal." },
+      { "title": "Scaling Plan", "description": "Add more contracts as your account grows." }
+    ]
+  },
+  {
+    "id": "fidelcrest",
+    "name": "Fidelcrest",
+    "type": "Forex",
+    "review": { "rating": 4.5, "count": 3500 },
+    "yearsInBusiness": 4,
+    "maxAllocation": 1000000,
+    "platform": ["MT4", "MT5"],
+    "referralLink": "https://fidelcrest.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "Varies from 5% to 20% based on challenge." },
+      { "title": "Fast Track option", "description": "Get funded in a single phase." }
+    ]
+  },
+  {
+    "id": "the-5-percenters",
+    "name": "The 5%ers",
+    "type": "Forex",
+    "review": { "rating": 4.8, "count": 7000 },
+    "yearsInBusiness": 6,
+    "maxAllocation": 4000000,
+    "platform": ["MT5"],
+    "referralLink": "https://the5ers.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "10% to get to a funded account." },
+      { "title": "Scaling Plan", "description": "Double your account size at every 10% profit milestone." }
+    ]
+  },
+  {
+    "id": "uprofit-trader",
+    "name": "UProfit Trader",
+    "type": "Futures",
+    "review": { "rating": 4.6, "count": 1200 },
+    "yearsInBusiness": 4,
+    "maxAllocation": 200000,
+    "platform": ["Rithmic", "Tradovate", "NinjaTrader"],
+    "referralLink": "https://www.uprofittrader.com/",
+    "promoCode": "CHECK",
+    "rules": [
+      { "title": "Profit Target", "description": "One-step evaluation with a 6% profit target." },
+      { "title": "Trailing Drawdown", "description": "Live and end-of-day drawdown options." }
     ]
   }
 ]

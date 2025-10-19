@@ -8,16 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import StarRating from './star-rating';
-import { Search, Filter, ArrowRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Search, Filter, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
 
 type FilterType = 'All' | 'Futures' | 'Forex';
+const FIRMS_PER_PAGE = 5;
 
 export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('All');
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredFirms = useMemo(() => {
     return firms
@@ -30,6 +32,18 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
       );
   }, [firms, searchTerm, filterType]);
 
+  const totalPages = Math.ceil(filteredFirms.length / FIRMS_PER_PAGE);
+  const paginatedFirms = filteredFirms.slice(
+    (currentPage - 1) * FIRMS_PER_PAGE,
+    currentPage * FIRMS_PER_PAGE
+  );
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
     <Card className="w-full shadow-lg">
       <CardContent className="p-4 md:p-6">
@@ -41,7 +55,10 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
               placeholder="Search firms by name..."
               className="pl-10"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset to first page on search
+              }}
             />
           </div>
           <div className="flex items-center gap-2 w-full md:w-auto">
@@ -50,9 +67,9 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
               Filters
             </Button>
             <div className="hidden md:flex items-center gap-1 p-1 bg-secondary rounded-lg">
-                <Button variant={filterType === 'All' ? 'default' : 'ghost'} size="sm" onClick={() => setFilterType('All')}>All</Button>
-                <Button variant={filterType === 'Futures' ? 'default' : 'ghost'} size="sm" onClick={() => setFilterType('Futures')}>Futures</Button>
-                <Button variant={filterType === 'Forex' ? 'default' : 'ghost'} size="sm" onClick={() => setFilterType('Forex')}>Forex</Button>
+                <Button variant={filterType === 'All' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('All'); setCurrentPage(1); }}>All</Button>
+                <Button variant={filterType === 'Futures' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Futures'); setCurrentPage(1); }}>Futures</Button>
+                <Button variant={filterType === 'Forex' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Forex'); setCurrentPage(1); }}>Forex</Button>
             </div>
           </div>
         </div>
@@ -66,9 +83,9 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                     className="overflow-hidden mb-4 md:hidden"
                 >
                     <div className="flex items-center justify-center gap-2 p-1 bg-secondary rounded-lg">
-                        <Button className="flex-1" variant={filterType === 'All' ? 'default' : 'ghost'} size="sm" onClick={() => setFilterType('All')}>All</Button>
-                        <Button className="flex-1" variant={filterType === 'Futures' ? 'default' : 'ghost'} size="sm" onClick={() => setFilterType('Futures')}>Futures</Button>
-                        <Button className="flex-1" variant={filterType === 'Forex' ? 'default' : 'ghost'} size="sm" onClick={() => setFilterType('Forex')}>Forex</Button>
+                        <Button className="flex-1" variant={filterType === 'All' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('All'); setCurrentPage(1); }}>All</Button>
+                        <Button className="flex-1" variant={filterType === 'Futures' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Futures'); setCurrentPage(1); }}>Futures</Button>
+                        <Button className="flex-1" variant={filterType === 'Forex' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Forex'); setCurrentPage(1); }}>Forex</Button>
                     </div>
                 </motion.div>
             )}
@@ -87,8 +104,8 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredFirms.length > 0 ? (
-                filteredFirms.map((firm) => (
+              {paginatedFirms.length > 0 ? (
+                paginatedFirms.map((firm) => (
                   <TableRow key={firm.id} className="hover:bg-muted/50">
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
@@ -130,6 +147,33 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
           </Table>
         </div>
       </CardContent>
+      {totalPages > 1 && (
+        <CardFooter className="flex items-center justify-between pt-4">
+            <span className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages}
+            </span>
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="sr-only">Previous Page</span>
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    <ChevronRight className="h-4 w-4" />
+                    <span className="sr-only">Next Page</span>
+                </Button>
+            </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }
