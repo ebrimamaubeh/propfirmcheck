@@ -25,6 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useEffect } from 'react';
 
 
 const samplePosts = [
@@ -65,6 +66,12 @@ export default function AdminDashboardPage() {
 
   const { data: posts, isLoading } = useCollection<BlogPost>(blogPostsQuery);
 
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.replace('/admin/login');
+    }
+  }, [isUserLoading, user, router]);
+
   const seedDatabase = async () => {
     if (!firestore) return;
     try {
@@ -90,13 +97,8 @@ export default function AdminDashboardPage() {
     }
   };
 
-  if (isUserLoading || isLoading) {
+  if (isUserLoading || isLoading || !user) {
     return <div>Loading dashboard...</div>;
-  }
-
-  if (!user) {
-    router.replace('/admin/login');
-    return null;
   }
   
   const handleDelete = async (postId: string) => {
