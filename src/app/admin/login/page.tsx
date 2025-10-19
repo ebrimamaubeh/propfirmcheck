@@ -21,7 +21,6 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState('jallowebrima7@gmail.com');
   const [password, setPassword] = useState('Lhooq123!');
   const [isSigningIn, setIsSigningIn] = useState(false);
-  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -40,34 +39,32 @@ export default function AdminLoginPage() {
       // The useEffect will handle the redirect
     } catch (error) {
         const firebaseError = error as FirebaseError;
-        toast({
-          variant: 'destructive',
-          title: 'Login Failed',
-          description: firebaseError.message || 'An unexpected error occurred.',
-        });
+        // If user not found, try to create it
+        if (firebaseError.code === 'auth/user-not-found') {
+          try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            toast({
+              title: 'Admin Account Created',
+              description: "Your admin account has been created. You are now logged in.",
+            });
+            // The useEffect will handle redirect
+          } catch (creationError) {
+            const creationFirebaseError = creationError as FirebaseError;
+            toast({
+              variant: 'destructive',
+              title: 'Creation Failed',
+              description: creationFirebaseError.message || 'Could not create admin account.',
+            });
+          }
+        } else {
+            toast({
+              variant: 'destructive',
+              title: 'Login Failed',
+              description: firebaseError.message || 'An unexpected error occurred.',
+            });
+        }
     } finally {
       setIsSigningIn(false);
-    }
-  };
-
-  const handleCreateAccount = async () => {
-    setIsCreatingAccount(true);
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      toast({
-        title: 'Admin Account Created',
-        description: "Your admin account has been created. You are now logged in.",
-      });
-      // The useEffect will handle the redirect after state update
-    } catch (error) {
-        const firebaseError = error as FirebaseError;
-        toast({
-          variant: 'destructive',
-          title: 'Creation Failed',
-          description: firebaseError.message || 'Could not create admin account.',
-        });
-    } finally {
-      setIsCreatingAccount(false);
     }
   };
 
@@ -78,7 +75,7 @@ export default function AdminLoginPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl">Admin Login</CardTitle>
-            <CardDescription>Enter your credentials to access the dashboard. If you are the first admin, create an account.</CardDescription>
+            <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -103,14 +100,9 @@ export default function AdminLoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button onClick={handleSignIn} className="w-full" disabled={isSigningIn || isCreatingAccount}>
-                  {isSigningIn ? 'Signing In...' : 'Sign In'}
-                </Button>
-                <Button onClick={handleCreateAccount} variant="secondary" className="w-full" disabled={isSigningIn || isCreatingAccount}>
-                  {isCreatingAccount ? 'Creating...' : 'Create Admin Account'}
-                </Button>
-              </div>
+              <Button onClick={handleSignIn} className="w-full" disabled={isSigningIn}>
+                {isSigningIn ? 'Signing In...' : 'Sign In'}
+              </Button>
             </div>
           </CardContent>
         </Card>
