@@ -177,12 +177,9 @@ export default function AdminDashboardPage() {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        const firms = JSON.parse(e.target?.result as string) as Omit<PropFirm, 'id'>[];
+        const firms = JSON.parse(e.target?.result as string);
         if (!Array.isArray(firms)) {
-          throw new Error('JSON file must be an array of prop firms.');
-        }
-        if (firms.some(firm => !firm.name)) {
-            throw new Error('All firms in the JSON file must have a "name" property.');
+          throw new Error('JSON file must contain an array of prop firm objects.');
         }
         await bulkAddPropFirms(firms);
       } catch (error: any) {
@@ -201,17 +198,21 @@ export default function AdminDashboardPage() {
     reader.readAsText(file);
   };
 
-  const bulkAddPropFirms = async (firms: Omit<PropFirm, 'id'>[]) => {
+  const bulkAddPropFirms = async (firms: (Omit<PropFirm, 'id'> | null)[]) => {
     if (!firestore) return;
     setIsLoading(true);
     let firmsAdded = 0;
     let firmsUpdated = 0;
 
+    const validFirms = firms.filter((firm): firm is Omit<PropFirm, 'id'> => {
+        return firm !== null && typeof firm === 'object' && !!firm.name;
+    });
+
     try {
       const batch = writeBatch(firestore);
       const firmsCollection = collection(firestore, 'prop_firms');
       
-      for (const firm of firms) {
+      for (const firm of validFirms) {
         const firmId = slugify(firm.name);
         const firmDataWithId = { ...firm, id: firmId };
         const docRef = doc(firmsCollection, firmId);
@@ -528,3 +529,5 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+    
