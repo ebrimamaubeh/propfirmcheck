@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Upload } from 'lucide-react';
 import type { BlogPost, PropFirm } from '@/lib/types';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -24,7 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLoading } from '@/context/loading-context';
 
 
@@ -68,7 +68,7 @@ export default function AdminDashboardPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { setIsLoading } = useLoading();
-  const [isSyncing, setIsSyncing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const blogPostsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -160,6 +160,58 @@ export default function AdminDashboardPage() {
         setIsLoading(false);
     }
   };
+
+  const handleJsonUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const firms = JSON.parse(e.target?.result as string) as PropFirm[];
+        if (!Array.isArray(firms)) {
+          throw new Error('JSON file must be an array of prop firms.');
+        }
+        await bulkAddPropFirms(firms);
+      } catch (error: any) {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid JSON file',
+          description: error.message,
+        });
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const bulkAddPropFirms = async (firms: PropFirm[]) => {
+    if (!firestore) return;
+    setIsLoading(true);
+    try {
+      const batch = writeBatch(firestore);
+      const firmsCollection = collection(firestore, 'prop_firms');
+
+      firms.forEach(firm => {
+        const docRef = firm.id ? doc(firmsCollection, firm.id) : doc(firmsCollection);
+        batch.set(docRef, firm);
+      });
+
+      await batch.commit();
+      toast({
+        title: 'Success',
+        description: `${firms.length} prop firms have been added/updated.`,
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to bulk add prop firms: ' + error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   if (isUserLoading || isPostsLoading || isFirmsLoading || (!user && !isUserLoading)) {
     return null; // The global loading spinner will be shown
@@ -269,6 +321,25 @@ export default function AdminDashboardPage() {
                             <CardTitle>Prop Firms</CardTitle>
                             <CardDescription>A list of all prop firms in your database.</CardDescription>
                         </div>
+                        <div className="flex gap-2">
+                           <input
+                              type="file"
+                              ref={fileInputRef}
+                              className="hidden"
+                              accept=".json"
+                              onChange={handleJsonUpload}
+                            />
+                            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Bulk Add via JSON
+                            </Button>
+                            <Button asChild>
+                                <Link href="/admin/dashboard/firm/edit">
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    New Firm
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -291,6 +362,11 @@ export default function AdminDashboardPage() {
                               <TableCell>{firm.review.rating}/5</TableCell>
                               <TableCell>{firm.review.count}</TableCell>
                               <TableCell className="text-right">
+                                 <Button asChild variant="ghost" size="icon">
+                                    <Link href={`/admin/dashboard/firm/edit?id=${firm.id}`}>
+                                        <Edit className="h-4 w-4" />
+                                    </Link>
+                                </Button>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="icon">
