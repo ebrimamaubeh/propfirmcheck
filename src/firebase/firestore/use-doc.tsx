@@ -54,6 +54,10 @@ export function useDoc<T = any>(
       setError(null);
       return;
     }
+    
+    if (!(memoizedDocRef as any).__memo) {
+      console.error('The document reference passed to useDoc was not memoized with useMemoFirebase. This will cause performance issues.', memoizedDocRef);
+    }
 
     setIsLoading(true);
     setError(null);
