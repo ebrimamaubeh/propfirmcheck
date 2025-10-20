@@ -52,7 +52,7 @@ export default function BlogPostPage() {
     <>
       <Header />
       <main className="flex-1 py-12 md:py-20">
-        <div className="container max-w-3xl">
+        <div className="container">
           <div className="mb-8">
             <Button asChild variant="outline">
               <Link href="/blog">
@@ -61,26 +61,34 @@ export default function BlogPostPage() {
               </Link>
             </Button>
           </div>
-          <div className="flex justify-center">
-            <article className="w-full">
-              <header className="mb-8 text-center">
-                <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">{post.title}</h1>
-                <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-muted-foreground">
-                  <Badge variant="secondary">{post.category}</Badge>
-                  <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : ''}</span>
-                  <span>by {post.author}</span>
-                </div>
-              </header>
-              
-              <Card>
-                  <CardContent className="py-6">
-                      <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed mx-auto">
-                        <ReactMarkdown>{post.content}</ReactMarkdown>
-                      </div>
-                  </CardContent>
-              </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
+            <div className="hidden lg:block lg:col-span-1">
+              {/* Left sidebar - empty for now */}
+            </div>
+            <div className="lg:col-span-4">
+              <article className="w-full">
+                <header className="mb-8 text-center">
+                  <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">{post.title}</h1>
+                  <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-muted-foreground">
+                    <Badge variant="secondary">{post.category}</Badge>
+                    <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : ''}</span>
+                    <span>by {post.author}</span>
+                  </div>
+                </header>
+                
+                <Card>
+                    <CardContent className="py-6">
+                        <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed mx-auto">
+                          <ReactMarkdown>{post.content}</ReactMarkdown>
+                        </div>
+                    </CardContent>
+                </Card>
 
-            </article>
+              </article>
+            </div>
+            <div className="hidden lg:block lg:col-span-1">
+              {/* Right sidebar - empty for now */}
+            </div>
           </div>
         </div>
       </main>
