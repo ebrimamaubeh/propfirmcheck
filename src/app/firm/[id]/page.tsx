@@ -55,17 +55,26 @@ export default function FirmDetailsPage() {
       </div>
       <div className="space-y-8">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-3xl font-headline">{firm.name}</CardTitle>
-            <CardDescription>
-              <div className="flex flex-wrap items-center gap-4 mt-2">
-                <StarRating rating={firm.review.rating} />
-                <span className="text-sm text-muted-foreground">{firm.review.rating}/5 ({firm.review.count} reviews)</span>
-                <div className="flex gap-2">
-                  {firm.type.map(t => <Badge variant="secondary" key={t}>{t} Firm</Badge>)}
+          <CardHeader className="flex flex-row items-start justify-between">
+            <div>
+              <CardTitle className="text-3xl font-headline">{firm.name}</CardTitle>
+              <CardDescription>
+                <div className="flex flex-wrap items-center gap-4 mt-2">
+                  <StarRating rating={firm.review.rating} />
+                  <span className="text-sm text-muted-foreground">{firm.review.rating}/5 ({firm.review.count} reviews)</span>
+                  <div className="flex gap-2">
+                    {firm.type.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}
+                  </div>
                 </div>
+              </CardDescription>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2 text-right">Promo Code</h4>
+              <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
+                  <span className="font-mono text-lg font-bold text-primary">CHECK</span>
+                  <CopyButton textToCopy="CHECK" />
               </div>
-            </CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">In business for {firm.yearsInBusiness} years, offering up to ${firm.maxAllocation.toLocaleString()} in allocation.</p>
@@ -100,13 +109,6 @@ export default function FirmDetailsPage() {
               <h4 className="font-semibold mb-2">Trading Platforms</h4>
               <div className="flex flex-wrap gap-2">
                 {firm.platform.map((p) => <Badge key={p}>{p}</Badge>)}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Promo Code</h4>
-              <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
-                  <span className="font-mono text-lg font-bold text-primary">CHECK</span>
-                  <CopyButton textToCopy="CHECK" />
               </div>
             </div>
           </CardContent>
