@@ -1,13 +1,13 @@
 
 'use client'
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { PropFirm } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
@@ -35,11 +35,12 @@ export default function FirmDetailsPage() {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
 
-  if (isLoading || firm === undefined) {
-    return null;
+  if (isLoading) {
+    return null; // The global loading spinner is active
   }
-  
-  if (firm === null) {
+
+  if (!firm) {
+    // Render nothing for now, to avoid triggering 404
     return null;
   }
 
@@ -55,8 +56,8 @@ export default function FirmDetailsPage() {
       </div>
       <div className="space-y-8">
         <Card>
-          <CardHeader className="flex flex-row items-start justify-between">
-            <div>
+          <CardHeader className="flex flex-col md:flex-row items-start justify-between gap-4">
+            <div className="flex-1">
               <CardTitle className="text-3xl font-headline">{firm.name}</CardTitle>
               <CardDescription>
                 <div className="flex flex-wrap items-center gap-4 mt-2">
@@ -68,7 +69,7 @@ export default function FirmDetailsPage() {
                 </div>
               </CardDescription>
             </div>
-            <div>
+            <div className="shrink-0">
               <h4 className="font-semibold mb-2 text-right">Promo Code</h4>
               <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
                   <span className="font-mono text-lg font-bold text-primary">CHECK</span>
@@ -79,6 +80,13 @@ export default function FirmDetailsPage() {
           <CardContent>
             <p className="text-muted-foreground">In business for {firm.yearsInBusiness} years, offering up to ${firm.maxAllocation.toLocaleString()} in allocation.</p>
           </CardContent>
+          <CardFooter>
+             <Button asChild size="lg" className="w-full">
+              <a href={firm.referralLink} target="_blank" rel="noopener noreferrer">
+                Visit {firm.name} <ArrowUpRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </CardFooter>
         </Card>
         
         <Card>
@@ -114,11 +122,6 @@ export default function FirmDetailsPage() {
           </CardContent>
         </Card>
 
-        <Button asChild size="lg" className="w-full">
-          <a href={firm.referralLink} target="_blank" rel="noopener noreferrer">
-            Visit {firm.name} <ArrowUpRight className="ml-2 h-4 w-4" />
-          </a>
-        </Button>
       </div>
     </>
   );
