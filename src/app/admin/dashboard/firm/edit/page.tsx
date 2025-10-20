@@ -65,7 +65,7 @@ function EditFirmForm() {
       maxAllocation: 0,
       platform: '',
       referralLink: '',
-      promoCode: '',
+      promoCode: 'CHECK',
       rules: [{ title: '', description: '' }],
     },
   });
@@ -301,7 +301,7 @@ function EditFirmForm() {
                 <FormItem>
                   <FormLabel>Promo Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="CHECK" {...field} />
+                    <Input placeholder="CHECK" {...field} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -374,3 +374,5 @@ export default function EditFirmPage() {
     </Suspense>
   );
 }
+
+    
