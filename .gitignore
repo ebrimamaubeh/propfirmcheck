@@ -3,12 +3,10 @@
 # dependencies
 /node_modules
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnp.js
+# misc
+.DS_Store
+*.pem
 
 # testing
 /coverage
@@ -16,19 +14,18 @@
 # next.js
 /.next/
 /out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
+build/
+dist/
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+*.log
+
+# local env files
+.env
+.env*.local
 
 # vercel
 .vercel
@@ -36,10 +33,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.genkit/*
-.env*
-
-# firebase
-firebase-debug.log
-firestore-debug.log
