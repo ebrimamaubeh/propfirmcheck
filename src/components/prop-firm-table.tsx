@@ -17,7 +17,7 @@ import { useLoading } from '@/context/loading-context';
 const FIRM_TYPES = ['Futures', 'Forex'];
 const FIRMS_PER_PAGE = 5;
 
-type SortKey = 'name' | 'review.rating' | 'yearsInBusiness';
+type SortKey = 'name' | 'review.rating' | 'yearsInBusiness' | 'maxAllocation';
 type SortDirection = 'ascending' | 'descending';
 
 export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
@@ -180,7 +180,11 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                     Years {getSortIcon('yearsInBusiness')}
                   </Button>
                 </TableHead>
-                <TableHead className="text-right hidden md:table-cell">Max Allocation</TableHead>
+                <TableHead className="text-right hidden md:table-cell">
+                    <Button variant="ghost" onClick={() => requestSort('maxAllocation')}>
+                        Max Allocation {getSortIcon('maxAllocation')}
+                    </Button>
+                </TableHead>
                 <TableHead className="hidden sm:table-cell">Platform</TableHead>
                 <TableHead className="text-right">Details</TableHead>
               </TableRow>
