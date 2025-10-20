@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import StarRating from './star-rating';
-import { Search, Filter, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, ArrowRight, ChevronLeft, ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLoading } from '@/context/loading-context';
@@ -17,11 +17,15 @@ import { useLoading } from '@/context/loading-context';
 const FIRM_TYPES = ['Futures', 'Forex'];
 const FIRMS_PER_PAGE = 5;
 
+type SortKey = 'name' | 'review.rating' | 'yearsInBusiness';
+type SortDirection = 'ascending' | 'descending';
+
 export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection } | null>({ key: 'name', direction: 'ascending' });
   const { setIsLoading } = useLoading();
 
 
@@ -36,8 +40,33 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
     );
   }
 
-  const filteredFirms = useMemo(() => {
-    return firms
+  const sortedAndFilteredFirms = useMemo(() => {
+    let sortableFirms = [...firms];
+
+    if (sortConfig !== null) {
+      sortableFirms.sort((a, b) => {
+        let aValue: any;
+        let bValue: any;
+
+        if (sortConfig.key === 'review.rating') {
+          aValue = a.review.rating;
+          bValue = b.review.rating;
+        } else {
+          aValue = a[sortConfig.key as keyof PropFirm];
+          bValue = b[sortConfig.key as keyof PropFirm];
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return sortableFirms
       .filter(firm => {
         if (activeFilters.length === 0) return true;
         const firmTypes = Array.isArray(firm.type) ? firm.type : [firm.type];
@@ -46,10 +75,19 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
       .filter(firm =>
         firm.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-  }, [firms, searchTerm, activeFilters]);
+  }, [firms, searchTerm, activeFilters, sortConfig]);
 
-  const totalPages = Math.ceil(filteredFirms.length / FIRMS_PER_PAGE);
-  const paginatedFirms = filteredFirms.slice(
+  const requestSort = (key: SortKey) => {
+    let direction: SortDirection = 'ascending';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(sortedAndFilteredFirms.length / FIRMS_PER_PAGE);
+  const paginatedFirms = sortedAndFilteredFirms.slice(
     (currentPage - 1) * FIRMS_PER_PAGE,
     currentPage * FIRMS_PER_PAGE
   );
@@ -66,6 +104,13 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
     setActiveFilters([]);
     setCurrentPage(1);
   }
+
+  const getSortIcon = (key: SortKey) => {
+    if (!sortConfig || sortConfig.key !== key) {
+      return null;
+    }
+    return sortConfig.direction === 'ascending' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />;
+  };
 
   return (
     <Card className="w-full shadow-lg">
@@ -120,9 +165,21 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead className="text-center">Reviews</TableHead>
-                <TableHead className="text-center hidden md:table-cell">Years</TableHead>
+                <TableHead>
+                  <Button variant="ghost" onClick={() => requestSort('name')}>
+                    Name {getSortIcon('name')}
+                  </Button>
+                </TableHead>
+                <TableHead className="text-center">
+                   <Button variant="ghost" onClick={() => requestSort('review.rating')}>
+                    Reviews {getSortIcon('review.rating')}
+                  </Button>
+                </TableHead>
+                <TableHead className="text-center hidden md:table-cell">
+                   <Button variant="ghost" onClick={() => requestSort('yearsInBusiness')}>
+                    Years {getSortIcon('yearsInBusiness')}
+                  </Button>
+                </TableHead>
                 <TableHead className="text-right hidden md:table-cell">Max Allocation</TableHead>
                 <TableHead className="hidden sm:table-cell">Platform</TableHead>
                 <TableHead className="text-right">Details</TableHead>
