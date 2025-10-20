@@ -73,7 +73,7 @@ export default function BlogPostPage() {
             
             <Card>
                 <CardContent className="py-6">
-                    <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed text-left">
+                    <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed mx-auto">
                       <ReactMarkdown>{post.content}</ReactMarkdown>
                     </div>
                 </CardContent>
