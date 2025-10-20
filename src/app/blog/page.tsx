@@ -6,13 +6,13 @@ import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
 import type { BlogPost } from '@/lib/types';
 import { format } from 'date-fns';
 import { useLoading } from '@/context/loading-context';
+import { BlogLayout } from '@/components/layout/blog-layout';
 
 export default function BlogPage() {
   const firestore = useFirestore();
@@ -33,13 +33,13 @@ export default function BlogPage() {
 
   const categories = useMemo(() => {
     if (!posts) return [];
-    return [...new Set(posts.map(p => p.category))];
+    return ['All', ...new Set(posts.map(p => p.category))];
   }, [posts]);
 
   const filteredPosts = useMemo(() => {
     return (posts || [])
       .filter(post => {
-        if (activeCategory && post.category !== activeCategory) {
+        if (activeCategory && activeCategory !== 'All' && post.category !== activeCategory) {
           return false;
         }
         if (searchTerm && !post.title.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -50,7 +50,11 @@ export default function BlogPage() {
   }, [posts, searchTerm, activeCategory]);
 
   return (
-    <>
+    <BlogLayout
+      categories={categories}
+      activeCategory={activeCategory}
+      onCategoryChange={setActiveCategory}
+    >
       <div className="text-center mb-12">
         <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">The Blog</h1>
         <p className="max-w-2xl mx-auto text-muted-foreground md:text-lg">
@@ -58,37 +62,18 @@ export default function BlogPage() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <div className="relative w-full md:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search articles..."
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant={activeCategory === null ? 'default' : 'outline'}
-            onClick={() => setActiveCategory(null)}
-          >
-            All
-          </Button>
-          {categories.map(category => (
-            <Button
-              key={category}
-              variant={activeCategory === category ? 'default' : 'outline'}
-              onClick={() => setActiveCategory(category)}
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
+      <div className="relative w-full mb-8">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Search articles..."
+          className="pl-10"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
         {isLoading && (
           null
         )}
@@ -99,7 +84,7 @@ export default function BlogPage() {
                 <CardTitle className="line-clamp-2">{post.title}</CardTitle>
                 <CardDescription>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-                    <span>{format(post.createdAt.toDate(), 'MMMM d, yyyy')}</span>
+                    <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : '...'}</span>
                     <span>&middot;</span>
                     <span>By {post.author}</span>
                   </div>
@@ -118,6 +103,6 @@ export default function BlogPage() {
           <p className="text-muted-foreground">No posts found. Try a different search or filter.</p>
         </div>
       )}
-    </>
+    </BlogLayout>
   );
 }
