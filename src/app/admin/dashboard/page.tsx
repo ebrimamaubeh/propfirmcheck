@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect } from 'react';
 import PropFirmForm from '@/components/prop-firm-form';
 import propFirmsData from '@/lib/prop-firms-data.json';
+import { useLoading } from '@/context/loading-context';
 
 function slugify(text: string) {
   return text
@@ -44,19 +45,19 @@ function slugify(text: string) {
 const samplePosts = [
     {
       title: 'Getting Started with Futures Trading',
-      content: 'Futures trading can be complex, but with the right foundation, you can navigate the markets. This post covers the basics of futures contracts, leverage, and risk management.\n\n## Understanding Futures\n\nA futures contract is a legal agreement to buy or sell a particular commodity or financial instrument at a predetermined price at a specified time in the future.',
+      content: '<h2>Understanding Futures</h2><p>Futures trading can be complex, but with the right foundation, you can navigate the markets. This post covers the basics of futures contracts, leverage, and risk management. A futures contract is a legal agreement to buy or sell a particular commodity or financial instrument at a predetermined price at a specified time in the future.</p>',
       author: 'Admin',
       category: 'Futures',
     },
     {
       title: 'Forex vs Futures: Which is Right for You?',
-      content: 'Deciding between Forex and Futures trading depends on your style, risk tolerance, and goals. \n\n## Key Differences\n\n- **Market Hours**: Forex is a 24/5 market, while futures have specific trading sessions.\n- **Regulation**: Futures are traded on centralized exchanges, offering more transparency.',
+      content: '<h2>Key Differences</h2><p>Deciding between Forex and Futures trading depends on your style, risk tolerance, and goals.<ul><li><strong>Market Hours</strong>: Forex is a 24/5 market, while futures have specific trading sessions.</li><li><strong>Regulation</strong>: Futures are traded on centralized exchanges, offering more transparency.</li></ul></p>',
       author: 'Admin',
       category: 'Trading',
     },
     {
       title: 'Top 3 Mistakes to Avoid in Prop Trading',
-      content: 'Proprietary trading offers incredible opportunities, but pitfalls exist. \n\n### 1. Overleveraging\n\nUsing too much leverage is the quickest way to blow an account. Always respect your risk parameters.\n\n### 2. Ignoring the Rules\n\nEvery prop firm has rules. Violating them means losing your funded account. Know them inside and out.',
+      content: '<h3>1. Overleveraging</h3><p>Proprietary trading offers incredible opportunities, but pitfalls exist. Using too much leverage is the quickest way to blow an account. Always respect your risk parameters.</p><h3>2. Ignoring the Rules</h3><p>Every prop firm has rules. Violating them means losing your funded account. Know them inside and out.</p>',
       author: 'Admin',
       category: 'Prop Firms',
     },
@@ -69,6 +70,7 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { setIsLoading } = useLoading();
 
   const blogPostsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -88,8 +90,13 @@ export default function AdminDashboardPage() {
     }
   }, [isUserLoading, user, router]);
 
+  useEffect(() => {
+    setIsLoading(isUserLoading || isPostsLoading || isFirmsLoading);
+  }, [isUserLoading, isPostsLoading, isFirmsLoading, setIsLoading]);
+
   const seedBlogPosts = async () => {
     if (!firestore) return;
+    setIsLoading(true);
     try {
         const batch = writeBatch(firestore);
         const postsCollection = collection(firestore, 'blogPosts');
@@ -110,11 +117,14 @@ export default function AdminDashboardPage() {
             title: 'Error',
             description: 'Failed to seed blog posts: ' + error.message,
         });
+    } finally {
+        setIsLoading(false);
     }
   };
 
   const seedPropFirms = async () => {
     if (!firestore) return;
+    setIsLoading(true);
     try {
         const firmsCollection = collection(firestore, 'prop_firms');
         const existingFirmsSnap = await getDocs(firmsCollection);
@@ -140,11 +150,14 @@ export default function AdminDashboardPage() {
             title: 'Error',
             description: 'Failed to seed prop firms: ' + error.message,
         });
+    } finally {
+        setIsLoading(false);
     }
   };
 
   const deleteBlogPost = async (postId: string) => {
     if (!firestore) return;
+    setIsLoading(true);
     try {
         await deleteDoc(doc(firestore, 'blogPosts', postId));
         toast({
@@ -157,11 +170,14 @@ export default function AdminDashboardPage() {
             title: 'Error',
             description: 'Failed to delete post: ' + error.message,
         });
+    } finally {
+        setIsLoading(false);
     }
   };
 
   const deletePropFirm = async (firmId: string) => {
     if (!firestore) return;
+    setIsLoading(true);
     try {
         await deleteDoc(doc(firestore, 'prop_firms', firmId));
         toast({
@@ -174,14 +190,16 @@ export default function AdminDashboardPage() {
             title: 'Error',
             description: 'Failed to delete prop firm: ' + error.message,
         });
+    } finally {
+        setIsLoading(false);
     }
   };
 
   const handleAddPropFirm = async (firmData: Omit<PropFirm, 'id'>) => {
     if (!firestore) return;
+    setIsLoading(true);
     try {
         const collectionRef = collection(firestore, 'prop_firms');
-        const newDocRef = doc(collectionRef, slugify(firmData.name));
         await addDoc(collectionRef, firmData);
         toast({ title: "Success", description: "Prop firm added successfully." });
     } catch (error: any) {
@@ -190,12 +208,14 @@ export default function AdminDashboardPage() {
             title: 'Error',
             description: `Failed to add prop firm: ${error.message}`
         });
+    } finally {
+        setIsLoading(false);
     }
   };
 
 
   if (isUserLoading || isPostsLoading || isFirmsLoading || (!user && !isUserLoading)) {
-    return <div>Loading dashboard...</div>;
+    return null; // The global loading spinner will be shown
   }
   
   return (

@@ -12,15 +12,21 @@ import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { FirebaseError } from 'firebase/app';
+import { useLoading } from '@/context/loading-context';
 
 export default function AdminLoginPage() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+  const { setIsLoading } = useLoading();
   const [email, setEmail] = useState('jallowebrima7@gmail.com');
   const [password, setPassword] = useState('Lhooq123!');
   const [isSigningIn, setIsSigningIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(isUserLoading);
+  }, [isUserLoading, setIsLoading]);
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -29,18 +35,19 @@ export default function AdminLoginPage() {
   }, [user, isUserLoading, router]);
 
   if (isUserLoading || user) {
-    return <div>Loading...</div>;
+    return null; // Global loading spinner will be shown
   }
 
   const handleSignIn = async () => {
+    if (!auth) return;
     setIsSigningIn(true);
+    setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       // The useEffect will handle the redirect
     } catch (error) {
         const firebaseError = error as FirebaseError;
-        // If user not found, try to create it
-        if (firebaseError.code === 'auth/user-not-found') {
+        if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/invalid-credential') {
           try {
             await createUserWithEmailAndPassword(auth, email, password);
             toast({
@@ -65,6 +72,7 @@ export default function AdminLoginPage() {
         }
     } finally {
       setIsSigningIn(false);
+      setIsLoading(false);
     }
   };
 

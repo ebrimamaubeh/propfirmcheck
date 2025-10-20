@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import PropFirmTable from '@/components/prop-firm-table';
@@ -7,9 +8,11 @@ import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
+import { useLoading } from '@/context/loading-context';
 
 export default function Home() {
   const firestore = useFirestore();
+  const { setIsLoading } = useLoading();
 
   const firmsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -17,6 +20,10 @@ export default function Home() {
   }, [firestore]);
   
   const { data: firms, isLoading } = useCollection<PropFirm>(firmsQuery);
+
+  useEffect(() => {
+    setIsLoading(isLoading);
+  }, [isLoading, setIsLoading]);
 
   return (
     <>
@@ -35,10 +42,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               {isLoading || !firms ? (
-                <div className="w-full space-y-4">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-40 w-full" />
-                </div>
+                null
               ) : (
                 <PropFirmTable firms={firms} />
               )}

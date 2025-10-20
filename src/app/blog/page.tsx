@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
@@ -11,13 +11,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
 import type { BlogPost } from '@/lib/types';
 import { format } from 'date-fns';
+import { useLoading } from '@/context/loading-context';
 
 export default function BlogPage() {
   const firestore = useFirestore();
+  const { setIsLoading } = useLoading();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
@@ -27,6 +28,10 @@ export default function BlogPage() {
   }, [firestore]);
 
   const { data: posts, isLoading } = useCollection<BlogPost>(blogPostsQuery);
+
+  useEffect(() => {
+    setIsLoading(isLoading);
+  }, [isLoading, setIsLoading]);
 
   const categories = useMemo(() => {
     if (!posts) return [];
@@ -89,18 +94,9 @@ export default function BlogPage() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {isLoading && Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i}>
-                <CardHeader>
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-4 w-full mb-2" />
-                  <Skeleton className="h-4 w-full" />
-                </CardContent>
-              </Card>
-            ))}
+            {isLoading && (
+              null
+            )}
             {!isLoading && filteredPosts.map(post => (
               <Link href={`/blog/${post.slug}`} key={post.id}>
                 <Card className="h-full hover:shadow-lg transition-shadow">

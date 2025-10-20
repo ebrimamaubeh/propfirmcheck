@@ -35,7 +35,7 @@ function EditPostForm() {
     
     const firestore = useFirestore();
     const { toast } = useToast();
-    const { setIsLoading: setAppIsLoading } = useLoading();
+    const { setIsLoading } = useLoading();
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -53,8 +53,8 @@ function EditPostForm() {
     const { data: post, isLoading: isPostLoading } = useDoc<BlogPost>(postRef);
 
     useEffect(() => {
-        setAppIsLoading(isUserLoading || isPostLoading);
-    }, [isUserLoading, isPostLoading, setAppIsLoading]);
+        setIsLoading(isUserLoading || (postId && isPostLoading));
+    }, [isUserLoading, postId, isPostLoading, setIsLoading]);
 
     useEffect(() => {
         if (post) {
@@ -72,14 +72,13 @@ function EditPostForm() {
         }
     }, [isUserLoading, user, router]);
 
-
-    if (isUserLoading || isPostLoading) {
+    if (isUserLoading || (postId && isPostLoading)) {
         return null; // The global loading spinner will be shown
     }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
-        if (!post) { // Only auto-slugify for new posts
+        if (!postId) { // Only auto-slugify for new posts
             setSlug(slugify(e.target.value));
         }
     };
@@ -88,7 +87,7 @@ function EditPostForm() {
         e.preventDefault();
         if (!firestore) return;
         setIsSaving(true);
-        setAppIsLoading(true);
+        setIsLoading(true);
         
         const postData = {
             title,
@@ -119,9 +118,9 @@ function EditPostForm() {
                 title: 'Error',
                 description: `Failed to save post: ${error.message}`
             });
-            setIsSaving(false);
         } finally {
-            setAppIsLoading(false);
+            setIsSaving(false);
+            setIsLoading(false);
         }
     };
 
