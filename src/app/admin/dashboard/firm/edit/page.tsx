@@ -184,7 +184,7 @@ function EditFirmForm() {
                   <FormItem>
                     <FormLabel>Firm ID</FormLabel>
                     <FormControl>
-                      <Input placeholder="topstep" {...field} disabled={!isNewFirm} />
+                      <Input placeholder="topstep" {...field} disabled />
                     </FormControl>
                      <FormDescription>This will be used in the URL and cannot be changed.</FormDescription>
                     <FormMessage />
@@ -374,5 +374,7 @@ export default function EditFirmPage() {
     </Suspense>
   );
 }
+
+    
 
     
