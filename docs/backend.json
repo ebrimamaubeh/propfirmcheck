@@ -129,21 +129,17 @@
     ]
   },
   "firestore": {
-      "collections": [
-        {
-          "path": "/prop_firms/{propFirmId}",
-          "schema": {
-            "$ref": "#/entities/PropFirm"
-          },
-          "description": "Collection of prop firm documents."
-        },
-        {
-          "path": "/blogPosts/{postId}",
-          "schema": {
-            "$ref": "#/entities/BlogPost"
-          },
-          "description": "Collection of blog posts for the website."
-        }
-      ]
+    "/prop_firms/{propFirmId}": {
+      "schema": {
+        "$ref": "#/entities/PropFirm"
+      },
+      "description": "Collection of prop firm documents."
+    },
+    "/blogPosts/{postId}": {
+      "schema": {
+        "$ref": "#/entities/BlogPost"
+      },
+      "description": "Collection of blog posts for the website."
     }
+  }
 }
