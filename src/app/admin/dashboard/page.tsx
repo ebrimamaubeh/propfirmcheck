@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2, RefreshCw } from 'lucide-react';
+import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 import type { BlogPost, PropFirm } from '@/lib/types';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -26,7 +26,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from 'react';
 import { useLoading } from '@/context/loading-context';
-import { updatePropFirms } from '@/ai/flows/update-prop-firms-flow';
 
 
 function slugify(text: string) {
@@ -121,28 +120,6 @@ export default function AdminDashboardPage() {
         setIsLoading(false);
     }
   };
-
-  const handleSyncPropFirms = async () => {
-    setIsSyncing(true);
-    setIsLoading(true);
-    try {
-      const result = await updatePropFirms();
-      toast({
-        title: 'Sync Complete',
-        description: result,
-      });
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Sync Failed',
-        description: error.message || 'An unexpected error occurred during sync.',
-      });
-    } finally {
-      setIsSyncing(false);
-      setIsLoading(false);
-    }
-  };
-
 
   const deleteBlogPost = async (postId: string) => {
     if (!firestore) return;
@@ -292,10 +269,6 @@ export default function AdminDashboardPage() {
                             <CardTitle>Prop Firms</CardTitle>
                             <CardDescription>A list of all prop firms in your database.</CardDescription>
                         </div>
-                        <Button onClick={handleSyncPropFirms} disabled={isSyncing}>
-                            <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                            {isSyncing ? 'Syncing...' : 'Sync with Data Source'}
-                        </Button>
                     </div>
                   </CardHeader>
                   <CardContent>
