@@ -213,11 +213,10 @@ export default function AdminDashboardPage() {
       const firmsCollection = collection(firestore, 'prop_firms');
       
       for (const firm of validFirms) {
-        // Generate a consistent ID based on the firm's name.
+        // Generate a consistent ID based on the firm's name and ignore any ID in the file.
         const firmId = slugify(firm.name);
-        
-        // Use this generated ID for both the document ID and the 'id' field in the data.
-        const firmDataWithId: PropFirm = { ...firm, id: firmId };
+        const { id, ...firmData } = firm; // Exclude the id from the source object
+        const firmDataWithId: PropFirm = { ...(firmData as Omit<PropFirm, 'id'>), id: firmId };
         
         const docRef = doc(firmsCollection, firmId);
         const docSnap = await getDoc(docRef);
@@ -523,3 +522,5 @@ export default function AdminDashboardPage() {
     </>
   );
 }
+
+    
