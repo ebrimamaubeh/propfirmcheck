@@ -151,7 +151,7 @@ function EditPostForm() {
                                 <Input id="category" value={category} onChange={(e) => setCategory(e.target.value)} required />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="content">Content (HTML)</Label>
+                                <Label htmlFor="content">Content (Markdown)</Label>
                                 <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required rows={15} />
                             </div>
                             <div className="flex justify-end gap-4">

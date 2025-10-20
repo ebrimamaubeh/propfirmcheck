@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { useLoading } from '@/context/loading-context';
+import ReactMarkdown from 'react-markdown';
 
 export default function BlogPostPage() {
   const { slug } = useParams() as { slug: string };
@@ -72,10 +73,9 @@ export default function BlogPostPage() {
             
             <Card>
                 <CardContent className="py-6">
-                    <div 
-                      className="prose prose-lg dark:prose-invert max-w-none leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
+                    <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed">
+                      <ReactMarkdown>{post.content}</ReactMarkdown>
+                    </div>
                 </CardContent>
             </Card>
 
