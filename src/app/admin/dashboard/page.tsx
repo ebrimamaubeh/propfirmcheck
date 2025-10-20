@@ -224,11 +224,11 @@ export default function AdminDashboardPage() {
   
   return (
     <div className="container flex-1">
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
         <aside className="hidden md:block md:col-span-1">
           {/* Left sidebar content goes here */}
         </aside>
-        <main className="md:col-span-4">
+        <main className="md:col-span-10">
            <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
