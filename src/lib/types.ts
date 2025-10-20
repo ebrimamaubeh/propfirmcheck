@@ -12,7 +12,6 @@ export type PropFirm = {
   maxAllocation: number;
   platform: string[];
   referralLink: string;
-  promoCode: string;
   rules: {
     title: string;
     description: string;

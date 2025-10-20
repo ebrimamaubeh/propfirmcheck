@@ -64,10 +64,6 @@
             "type": "string",
             "enum": ["Futures", "Forex"]
           }
-        },
-        "promoCode": {
-          "type": "string",
-          "description": "The promo code associated with the prop firm."
         }
       },
       "required": [
@@ -79,8 +75,7 @@
         "platform",
         "rules",
         "referralLink",
-        "type",
-        "promoCode"
+        "type"
       ]
     },
     "BlogPost": {

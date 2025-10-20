@@ -35,15 +35,11 @@ export default function FirmDetailsPage() {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
 
-  // While loading, the global spinner is active via the useEffect above.
-  // We render nothing here to prevent any rendering with incomplete data.
-  if (isLoading) {
+  if (isLoading || firm === undefined) {
     return null;
   }
-
-  // After loading is complete, if there is no firm data, render nothing.
-  if (!firm) {
-    // Instead of notFound(), render nothing to avoid the 404 error.
+  
+  if (firm === null) {
     return null;
   }
 
@@ -109,8 +105,8 @@ export default function FirmDetailsPage() {
             <div>
               <h4 className="font-semibold mb-2">Promo Code</h4>
               <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
-                  <span className="font-mono text-lg font-bold text-primary">{firm.promoCode}</span>
-                  <CopyButton textToCopy={firm.promoCode} />
+                  <span className="font-mono text-lg font-bold text-primary">CHECK</span>
+                  <CopyButton textToCopy="CHECK" />
               </div>
             </div>
           </CardContent>

@@ -9,7 +9,6 @@
     "maxAllocation": 150000,
     "platform": ["Tradovate", "TradingView", "NinjaTrader"],
     "referralLink": "https://www.topstep.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "Reach a 6% profit target to pass." },
       { "title": "Daily Loss Limit", "description": "Do not hit or exceed your Daily Loss Limit." },
@@ -25,7 +24,6 @@
     "maxAllocation": 200000,
     "platform": ["MT4", "MT5", "cTrader"],
     "referralLink": "https://ftmo.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "10% profit target for Step 1, 5% for Step 2." },
       { "title": "Max Daily Loss", "description": "5% of initial account balance." },
@@ -41,7 +39,6 @@
     "maxAllocation": 300000,
     "platform": ["Rithmic", "Tradovate"],
     "referralLink": "https://apextraderfunding.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "Reach a 6% profit target to pass." },
       { "title": "Trailing Threshold Drawdown", "description": "Trailing drawdown that stops once it hits the initial balance + $100." }
@@ -56,7 +53,6 @@
     "maxAllocation": 400000,
     "platform": ["MT4", "MT5"],
     "referralLink": "https://thefundedtraderprogram.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target (Phase 1)", "description": "10% for Standard and Rapid challenges." },
       { "title": "Profit Target (Phase 2)", "description": "5% for Standard and Rapid challenges." },
@@ -73,7 +69,6 @@
     "maxAllocation": 250000,
     "platform": ["Rithmic", "Tradovate", "NinjaTrader"],
     "referralLink": "https://bulenox.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "Varies by account size, typically around 6%." },
       { "title": "Daily Loss Limit", "description": "Do not hit or exceed the daily loss limit." },
@@ -89,7 +84,6 @@
     "maxAllocation": 300000,
     "platform": ["Rithmic", "Tradovate"],
     "referralLink": "https://leelootrading.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "Varies by account size." },
       { "title": "Trailing Drawdown", "description": "Calculated at the end of the trading day." }
@@ -104,7 +98,6 @@
     "maxAllocation": 300000,
     "platform": ["MT4", "MT5"],
     "referralLink": "https://myforexfunds.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "8% for Phase 1, 5% for Phase 2." },
       { "title": "Daily Drawdown", "description": "5% of initial balance." },
@@ -120,7 +113,6 @@
     "maxAllocation": 250000,
     "platform": ["Rithmic", "Tradovate"],
     "referralLink": "https://oneuptrader.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "Reach a 6% profit target." },
       { "title": "Trailing Drawdown", "description": "Based on end-of-day balance." }
@@ -135,7 +127,6 @@
     "maxAllocation": 400000,
     "platform": ["MT4", "MT5"],
     "referralLink": "https://trueforexfunds.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "8% in Phase 1, 5% in Phase 2." },
       { "title": "Max Daily Loss", "description": "5% of initial balance." },
@@ -151,7 +142,6 @@
     "maxAllocation": 150000,
     "platform": ["Rithmic", "Tradovate"],
     "referralLink": "https://takeprofittrader.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "$3,000 on a $50K account." },
       { "title": "Pro Drawdown", "description": "Drawdown updates on profit realization." }
@@ -166,7 +156,6 @@
     "maxAllocation": 300000,
     "platform": ["MT4", "MT5"],
     "referralLink": "https://e8funding.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "8% for Phase 1, 5% for Phase 2." },
       { "title": "Max Daily Loss", "description": "5% based on previous day's balance." },
@@ -182,7 +171,6 @@
     "maxAllocation": 100000,
     "platform": ["Rithmic", "Tradovate"],
     "referralLink": "https://tickticktrader.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "6% profit goal." },
       { "title": "Scaling Plan", "description": "Add more contracts as your account grows." }
@@ -197,7 +185,6 @@
     "maxAllocation": 1000000,
     "platform": ["MT4", "MT5"],
     "referralLink": "https://fidelcrest.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "Varies from 5% to 20% based on challenge." },
       { "title": "Fast Track option", "description": "Get funded in a single phase." }
@@ -212,7 +199,6 @@
     "maxAllocation": 4000000,
     "platform": ["MT5"],
     "referralLink": "https://the5ers.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "10% to get to a funded account." },
       { "title": "Scaling Plan", "description": "Double your account size at every 10% profit milestone." }
@@ -227,7 +213,6 @@
     "maxAllocation": 200000,
     "platform": ["Rithmic", "Tradovate", "NinjaTrader"],
     "referralLink": "https://www.uprofittrader.com/",
-    "promoCode": "CHECK",
     "rules": [
       { "title": "Profit Target", "description": "One-step evaluation with a 6% profit target." },
       { "title": "Trailing Drawdown", "description": "Live and end-of-day drawdown options." }

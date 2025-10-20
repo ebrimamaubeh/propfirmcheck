@@ -41,7 +41,6 @@ const firmSchema = z.object({
   maxAllocation: z.coerce.number().min(0),
   platform: z.string().min(1, "At least one platform is required"),
   referralLink: z.string().url("Must be a valid URL"),
-  promoCode: z.string(),
   rules: z.array(ruleSchema).min(1, "At least one rule is required"),
 });
 
@@ -69,7 +68,6 @@ function EditFirmForm() {
       maxAllocation: 0,
       platform: '',
       referralLink: '',
-      promoCode: 'CHECK',
       rules: [{ title: '', description: '' }],
     },
   });
@@ -321,20 +319,6 @@ function EditFirmForm() {
                   <FormLabel>Referral Link</FormLabel>
                   <FormControl>
                     <Input placeholder="https://www.topstep.com/" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="promoCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Promo Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="CHECK" {...field} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
