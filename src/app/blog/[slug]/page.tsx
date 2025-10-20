@@ -5,7 +5,6 @@ import { collection, query, where, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import type { BlogPost } from '@/lib/types';
 import { format } from 'date-fns';
@@ -61,11 +60,11 @@ export default function BlogPostPage() {
               </Link>
             </Button>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
-            <div className="hidden lg:block lg:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
+            <div className="hidden md:block md:col-span-1">
               {/* Left sidebar - empty for now */}
             </div>
-            <div className="lg:col-span-4">
+            <div className="md:col-span-4">
               <article className="w-full">
                 <header className="mb-8 text-center">
                   <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">{post.title}</h1>
@@ -86,7 +85,7 @@ export default function BlogPostPage() {
 
               </article>
             </div>
-            <div className="hidden lg:block lg:col-span-1">
+            <div className="hidden md:block md:col-span-1">
               {/* Right sidebar - empty for now */}
             </div>
           </div>

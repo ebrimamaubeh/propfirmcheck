@@ -6,8 +6,6 @@ import PropFirmTable from '@/components/prop-firm-table';
 import type { PropFirm } from '@/lib/types';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
 import { useLoading } from '@/context/loading-context';
 
 export default function Home() {
@@ -39,21 +37,11 @@ export default function Home() {
         </section>
 
         <section className="container py-12 md:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-3">
-              {isLoading || !firms ? (
-                null
-              ) : (
-                <PropFirmTable firms={firms} />
-              )}
-            </div>
-            <div className="hidden lg:block">
-              {/* This div is reserved for future ads */}
-              <Card className="h-96 flex items-center justify-center">
-                <p className="text-muted-foreground">Ad Space</p>
-              </Card>
-            </div>
-          </div>
+          {isLoading || !firms ? (
+            null
+          ) : (
+            <PropFirmTable firms={firms} />
+          )}
         </section>
       </main>
       <Footer />
