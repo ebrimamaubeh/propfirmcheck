@@ -7,6 +7,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { MainLayout } from '@/components/layout/main-layout';
+import { SidebarProvider } from '@/context/sidebar-context';
 
 export const metadata: Metadata = {
   title: 'Prop Firm Check',
@@ -28,13 +29,15 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen bg-background flex flex-col">
         <LoadingProvider>
           <FirebaseClientProvider>
-            <Header />
-            <main className="flex-1 py-12 md:py-20">
-              <MainLayout>
-                {children}
-              </MainLayout>
-            </main>
-            <Footer />
+            <SidebarProvider>
+              <Header />
+              <main className="flex-1 py-12 md:py-20">
+                <MainLayout>
+                  {children}
+                </MainLayout>
+              </main>
+              <Footer />
+            </SidebarProvider>
           </FirebaseClientProvider>
           <LoadingSpinner />
         </LoadingProvider>

@@ -1,8 +1,10 @@
-
 'use client';
 import type { ReactNode } from 'react';
+import { useSidebar } from '@/context/sidebar-context';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 
 interface BlogLayoutProps {
   children: ReactNode;
@@ -12,11 +14,11 @@ interface BlogLayoutProps {
 }
 
 export function BlogLayout({ children, categories, activeCategory, onCategoryChange }: BlogLayoutProps) {
-  return (
-    <div className="container flex-1">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <aside className="md:col-span-1">
-            <Card>
+    const { setSidebarContent } = useSidebar();
+
+    useEffect(() => {
+        const sidebar = (
+             <Card>
                 <CardHeader>
                     <CardTitle>Categories</CardTitle>
                 </CardHeader>
@@ -35,11 +37,19 @@ export function BlogLayout({ children, categories, activeCategory, onCategoryCha
                     </div>
                 </CardContent>
             </Card>
-        </aside>
-        <main className="md:col-span-3">
-          {children}
-        </main>
-      </div>
-    </div>
+        );
+
+        setSidebarContent(sidebar);
+
+        // Clear sidebar when component unmounts
+        return () => {
+            setSidebarContent(null);
+        };
+    }, [categories, activeCategory, onCategoryChange, setSidebarContent]);
+    
+  return (
+    <main>
+        {children}
+    </main>
   );
 }
