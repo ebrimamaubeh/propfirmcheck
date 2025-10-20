@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -75,6 +76,10 @@ function EditFirmForm() {
   });
 
   useEffect(() => {
+    setIsLoading(isUserLoading);
+  }, [isUserLoading, setIsLoading]);
+
+  useEffect(() => {
     if (!isUserLoading && !user) {
       router.replace('/admin/login');
     }
@@ -106,8 +111,15 @@ function EditFirmForm() {
         }
       }
     }
-    fetchFirm();
-  }, [firestore, firmId, setIsLoading, form, toast, router]);
+    if (!isNewFirm) {
+        fetchFirm();
+    }
+  }, [firestore, firmId, setIsLoading, form, toast, router, isNewFirm]);
+  
+  const handleCancel = () => {
+    setIsLoading(true);
+    router.back();
+  }
 
   const onSubmit = async (data: FirmFormData) => {
     if (!firestore) return;
@@ -131,7 +143,6 @@ function EditFirmForm() {
         title: 'Error',
         description: `Failed to save prop firm: ${error.message}`,
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -344,7 +355,7 @@ function EditFirmForm() {
 
 
             <div className="flex justify-end gap-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? 'Saving...' : 'Save Firm'}
               </Button>

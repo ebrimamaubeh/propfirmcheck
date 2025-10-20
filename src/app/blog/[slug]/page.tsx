@@ -1,3 +1,4 @@
+
 'use client';
 import { notFound, useParams } from 'next/navigation';
 import { useCollection, useMemoFirebase } from '@/firebase';
@@ -17,7 +18,11 @@ import ReactMarkdown from 'react-markdown';
 export default function BlogPostPage() {
   const { slug } = useParams() as { slug: string };
   const firestore = useFirestore();
-  const { setIsLoading: setAppIsLoading } = useLoading();
+  const { setIsLoading: setAppIsLoading, setIsLoading } = useLoading();
+
+  const handleLinkClick = () => {
+    setIsLoading(true);
+  }
 
   const postQuery = useMemoFirebase(() => {
     if (!firestore || !slug) return null;
@@ -50,7 +55,7 @@ export default function BlogPostPage() {
         <article className="w-full max-w-4xl">
             <div className="mb-8">
                 <Button asChild variant="outline">
-                <Link href="/blog">
+                <Link href="/blog" onClick={handleLinkClick}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Blog
                 </Link>

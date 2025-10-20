@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -70,6 +71,11 @@ function EditPostForm() {
         }
     }, [isUserLoading, user, router]);
 
+    const handleCancel = () => {
+      setIsLoading(true);
+      router.back();
+    }
+
     if (isUserLoading || (postId && isPostLoading)) {
         return null; // The global loading spinner will be shown
     }
@@ -116,7 +122,6 @@ function EditPostForm() {
                 title: 'Error',
                 description: `Failed to save post: ${error.message}`
             });
-        } finally {
             setIsSaving(false);
             setIsLoading(false);
         }
@@ -151,7 +156,7 @@ function EditPostForm() {
                         <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required rows={15} />
                     </div>
                     <div className="flex justify-end gap-4">
-                        <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+                        <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
                         <Button type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Post'}</Button>
                     </div>
                 </form>

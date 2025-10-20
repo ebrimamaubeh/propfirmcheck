@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -19,6 +20,10 @@ export default function BlogPage() {
   const { setIsLoading } = useLoading();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const handleLinkClick = () => {
+    setIsLoading(true);
+  }
 
   const blogPostsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -80,7 +85,7 @@ export default function BlogPage() {
       ) : filteredPosts.length > 0 ? (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
           {filteredPosts.map(post => (
-            <Link href={`/blog/${post.slug}`} key={post.id}>
+            <Link href={`/blog/${post.slug}`} key={post.id} onClick={handleLinkClick}>
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="line-clamp-2">{post.title}</CardTitle>

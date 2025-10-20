@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -8,6 +9,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { MainLayout } from '@/components/layout/main-layout';
 import { SidebarProvider } from '@/context/sidebar-context';
+import { ClientProviders } from '@/components/layout/client-providers';
 
 export const metadata: Metadata = {
   title: 'Prop Firm Check',
@@ -27,21 +29,17 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen bg-background flex flex-col">
-        <LoadingProvider>
-          <FirebaseClientProvider>
-            <SidebarProvider>
-              <Header />
-              <main className="flex-1 py-12 md:py-20">
-                <MainLayout>
-                  {children}
-                </MainLayout>
-              </main>
-              <Footer />
-            </SidebarProvider>
-          </FirebaseClientProvider>
-          <LoadingSpinner />
-        </LoadingProvider>
-        <Toaster />
+        <ClientProviders>
+            <Header />
+            <main className="flex-1 py-12 md:py-20">
+              <MainLayout>
+                {children}
+              </MainLayout>
+            </main>
+            <Footer />
+            <LoadingSpinner />
+            <Toaster />
+        </ClientProviders>
       </body>
     </html>
   );

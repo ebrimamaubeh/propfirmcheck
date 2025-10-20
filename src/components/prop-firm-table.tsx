@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -11,6 +12,7 @@ import StarRating from './star-rating';
 import { Search, Filter, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useLoading } from '@/context/loading-context';
 
 type FilterType = 'All' | 'Futures' | 'Forex';
 const FIRMS_PER_PAGE = 5;
@@ -20,6 +22,12 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
   const [filterType, setFilterType] = useState<FilterType>('All');
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const { setIsLoading } = useLoading();
+
+
+  const handleLinkClick = () => {
+    setIsLoading(true);
+  };
 
   const filteredFirms = useMemo(() => {
     return firms
@@ -129,7 +137,7 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                     </TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="ghost" size="sm">
-                        <Link href={`/firm/${firm.id}`}>
+                        <Link href={`/firm/${firm.id}`} onClick={handleLinkClick}>
                           More <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                       </Button>

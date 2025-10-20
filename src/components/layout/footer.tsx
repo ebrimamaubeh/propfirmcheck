@@ -1,6 +1,15 @@
+
+'use client';
 import Link from 'next/link';
+import { useLoading } from '@/context/loading-context';
 
 export function Footer() {
+  const { setIsLoading } = useLoading();
+
+  const handleLinkClick = () => {
+    setIsLoading(true);
+  };
+
   return (
     <footer className="bg-secondary/50 border-t">
       <div className="container py-12">
@@ -12,16 +21,16 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Navigation</h3>
             <ul className="space-y-2">
-              <li><Link href="/about" className="text-sm text-muted-foreground hover:text-foreground">About Us</Link></li>
-              <li><Link href="/disclaimer" className="text-sm text-muted-foreground hover:text-foreground">Disclaimer</Link></li>
-              <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground">Blog</Link></li>
+              <li><Link href="/about" className="text-sm text-muted-foreground hover:text-foreground" onClick={handleLinkClick}>About Us</Link></li>
+              <li><Link href="/disclaimer" className="text-sm text-muted-foreground hover:text-foreground" onClick={handleLinkClick}>Disclaimer</Link></li>
+              <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground" onClick={handleLinkClick}>Blog</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
-              <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms of Service</Link></li>
-              <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">Contact</Link></li>
+              <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground" onClick={handleLinkClick}>Terms of Service</Link></li>
+              <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground" onClick={handleLinkClick}>Contact</Link></li>
             </ul>
           </div>
           <div>

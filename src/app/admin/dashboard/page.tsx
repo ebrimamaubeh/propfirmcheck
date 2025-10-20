@@ -1,3 +1,4 @@
+
 'use client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -69,6 +70,10 @@ export default function AdminDashboardPage() {
   const { toast } = useToast();
   const { setIsLoading } = useLoading();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLinkClick = () => {
+    setIsLoading(true);
+  }
 
   const blogPostsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -246,7 +251,7 @@ export default function AdminDashboardPage() {
                             <CardDescription>A list of all blog posts in your database.</CardDescription>
                         </div>
                         <Button asChild>
-                            <Link href="/admin/dashboard/edit">
+                            <Link href="/admin/dashboard/edit" onClick={handleLinkClick}>
                                 <PlusCircle className="mr-2 h-4 w-4" />
                                 New Post
                             </Link>
@@ -274,7 +279,7 @@ export default function AdminDashboardPage() {
                               <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
                               <TableCell className="text-right">
                                 <Button asChild variant="ghost" size="icon">
-                                    <Link href={`/admin/dashboard/edit?id=${post.id}`}>
+                                    <Link href={`/admin/dashboard/edit?id=${post.id}`} onClick={handleLinkClick}>
                                         <Edit className="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -334,7 +339,7 @@ export default function AdminDashboardPage() {
                                 Bulk Add via JSON
                             </Button>
                             <Button asChild>
-                                <Link href="/admin/dashboard/firm/edit">
+                                <Link href="/admin/dashboard/firm/edit" onClick={handleLinkClick}>
                                     <PlusCircle className="mr-2 h-4 w-4" />
                                     New Firm
                                 </Link>
@@ -363,10 +368,10 @@ export default function AdminDashboardPage() {
                               <TableCell>{firm.review.count}</TableCell>
                               <TableCell className="text-right">
                                  <Button asChild variant="ghost" size="icon">
-                                    <Link href={`/admin/dashboard/firm/edit?id=${firm.id}`}>
+                                    <Link href={`/admin/dashboard/firm/edit?id=${firm.id}`} onClick={handleLinkClick}>
                                         <Edit className="h-4 w-4" />
                                     </Link>
-                                </Button>
+                                 </Button>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="icon">

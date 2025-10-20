@@ -1,3 +1,4 @@
+
 'use client'
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
@@ -18,6 +19,10 @@ export default function FirmDetailsPage() {
   const id = params.id as string;
   const firestore = useFirestore();
   const { setIsLoading } = useLoading();
+
+  const handleLinkClick = () => {
+    setIsLoading(true);
+  }
 
   const firmRef = useMemoFirebase(() => {
     if (!firestore || !id) return null;
@@ -42,7 +47,7 @@ export default function FirmDetailsPage() {
     <>
       <div className="mb-8">
         <Button asChild variant="outline">
-          <Link href="/">
+          <Link href="/" onClick={handleLinkClick}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to List
           </Link>
