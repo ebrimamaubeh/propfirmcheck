@@ -12,7 +12,7 @@ import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
 import { useLoading } from '@/context/loading-context';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function FirmDetailsPage() {
   const params = useParams();
