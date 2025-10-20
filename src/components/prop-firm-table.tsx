@@ -40,7 +40,8 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
     return firms
       .filter(firm => {
         if (activeFilters.length === 0) return true;
-        return activeFilters.some(filter => firm.type.includes(filter));
+        const firmTypes = Array.isArray(firm.type) ? firm.type : [firm.type];
+        return activeFilters.some(filter => firmTypes.includes(filter));
       })
       .filter(firm =>
         firm.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -129,39 +130,42 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
             </TableHeader>
             <TableBody>
               {paginatedFirms.length > 0 ? (
-                paginatedFirms.map((firm) => (
-                  <TableRow key={firm.id} className="hover:bg-muted/50">
-                    <TableCell className="font-medium">
-                      <div className="flex flex-col">
-                        <span className="font-semibold">{firm.name}</span>
-                        <div className="flex gap-1 mt-1">
-                          {firm.type.map(t => <Badge variant="outline" key={t}>{t}</Badge>)}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                        <div className="flex flex-col items-center">
-                            <StarRating rating={firm.review.rating} />
-                            <span className="text-xs text-muted-foreground mt-1">({firm.review.count})</span>
-                        </div>
-                    </TableCell>
-                    <TableCell className="text-center hidden md:table-cell">{firm.yearsInBusiness}</TableCell>
-                    <TableCell className="text-right hidden md:table-cell">${firm.maxAllocation.toLocaleString()}</TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                        <div className="flex flex-wrap gap-1">
-                            {firm.platform.slice(0, 2).map(p => <Badge key={p} variant="secondary">{p}</Badge>)}
-                            {firm.platform.length > 2 && <Badge variant="secondary">+{firm.platform.length - 2}</Badge>}
-                        </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="sm">
-                        <Link href={`/firm/${firm.id}`} onClick={handleLinkClick}>
-                          More <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
+                paginatedFirms.map((firm) => {
+                    const firmTypes = Array.isArray(firm.type) ? firm.type : [firm.type];
+                    return (
+                        <TableRow key={firm.id} className="hover:bg-muted/50">
+                            <TableCell className="font-medium">
+                            <div className="flex flex-col">
+                                <span className="font-semibold">{firm.name}</span>
+                                <div className="flex gap-1 mt-1">
+                                {firmTypes.map(t => <Badge variant="outline" key={t}>{t}</Badge>)}
+                                </div>
+                            </div>
+                            </TableCell>
+                            <TableCell className="text-center">
+                                <div className="flex flex-col items-center">
+                                    <StarRating rating={firm.review.rating} />
+                                    <span className="text-xs text-muted-foreground mt-1">({firm.review.count})</span>
+                                </div>
+                            </TableCell>
+                            <TableCell className="text-center hidden md:table-cell">{firm.yearsInBusiness}</TableCell>
+                            <TableCell className="text-right hidden md:table-cell">${firm.maxAllocation.toLocaleString()}</TableCell>
+                            <TableCell className="hidden sm:table-cell">
+                                <div className="flex flex-wrap gap-1">
+                                    {firm.platform.slice(0, 2).map(p => <Badge key={p} variant="secondary">{p}</Badge>)}
+                                    {firm.platform.length > 2 && <Badge variant="secondary">+{firm.platform.length - 2}</Badge>}
+                                </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                            <Button asChild variant="ghost" size="sm">
+                                <Link href={`/firm/${firm.id}`} onClick={handleLinkClick}>
+                                More <ArrowRight className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
+                            </TableCell>
+                        </TableRow>
+                    );
+                })
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">

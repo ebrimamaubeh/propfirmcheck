@@ -302,11 +302,11 @@ export default function AdminDashboardPage() {
   
   return (
     <div className="container flex-1">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-        <aside className="hidden md:block md:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <aside className="hidden lg:block lg:col-span-1">
           {/* Left sidebar content goes here */}
         </aside>
-        <main className="md:col-span-10">
+        <main className="lg:col-span-10">
            <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
@@ -470,40 +470,43 @@ export default function AdminDashboardPage() {
                       </TableHeader>
                       <TableBody>
                         {firms && firms.length > 0 ? (
-                          firms.map(firm => (
-                            <TableRow key={firm.id}>
-                              <TableCell className="font-medium">{firm.name}</TableCell>
-                              <TableCell><div className="flex gap-1">{firm.type.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}</div></TableCell>
-                              <TableCell>{firm.review.rating}/5</TableCell>
-                              <TableCell>{firm.review.count}</TableCell>
-                              <TableCell className="text-right">
-                                 <Button asChild variant="ghost" size="icon">
-                                    <Link href={`/admin/dashboard/firm/edit?id=${firm.id}`} onClick={handleLinkClick}>
-                                        <Edit className="h-4 w-4" />
-                                    </Link>
-                                 </Button>
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                      <Trash2 className="h-4 w-4 text-destructive" />
+                          firms.map(firm => {
+                            const firmTypes = Array.isArray(firm.type) ? firm.type : [firm.type];
+                            return (
+                                <TableRow key={firm.id}>
+                                <TableCell className="font-medium">{firm.name}</TableCell>
+                                <TableCell><div className="flex gap-1">{firmTypes.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}</div></TableCell>
+                                <TableCell>{firm.review.rating}/5</TableCell>
+                                <TableCell>{firm.review.count}</TableCell>
+                                <TableCell className="text-right">
+                                    <Button asChild variant="ghost" size="icon">
+                                        <Link href={`/admin/dashboard/firm/edit?id=${firm.id}`} onClick={handleLinkClick}>
+                                            <Edit className="h-4 w-4" />
+                                        </Link>
                                     </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        This action cannot be undone. This will permanently delete the prop firm.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </TableCell>
-                            </TableRow>
-                          ))
+                                    <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the prop firm.
+                                        </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                    </AlertDialog>
+                                </TableCell>
+                                </TableRow>
+                            );
+                          })
                         ) : (
                           <TableRow>
                             <TableCell colSpan={5} className="h-24 text-center">
@@ -518,7 +521,7 @@ export default function AdminDashboardPage() {
               </TabsContent>
           </Tabs>
         </main>
-        <aside className="hidden md:block md:col-span-1">
+        <aside className="hidden lg:block lg:col-span-1">
           {/* Right sidebar content goes here */}
         </aside>
       </div>
