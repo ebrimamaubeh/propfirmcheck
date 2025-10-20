@@ -6,6 +6,7 @@ import type { PropFirm } from '@/lib/types';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 
 export default function Home() {
   const firestore = useFirestore();
@@ -30,15 +31,25 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="container py-12 md:py-20 flex justify-center">
-          {isLoading || !firms ? (
-            <div className="w-full space-y-4">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-40 w-full" />
+        <section className="container py-12 md:py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              {isLoading || !firms ? (
+                <div className="w-full space-y-4">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-40 w-full" />
+                </div>
+              ) : (
+                <PropFirmTable firms={firms} />
+              )}
             </div>
-          ) : (
-            <PropFirmTable firms={firms} />
-          )}
+            <div className="hidden lg:block">
+              {/* This div is reserved for future ads */}
+              <Card className="h-96 flex items-center justify-center">
+                <p className="text-muted-foreground">Ad Space</p>
+              </Card>
+            </div>
+          </div>
         </section>
       </main>
       <Footer />

@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { BlogPost } from '@/lib/types';
+import { useLoading } from '@/context/loading-context';
 
 function slugify(text: string) {
   return text
@@ -34,6 +35,7 @@ function EditPostForm() {
     
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { setIsLoading: setAppIsLoading } = useLoading();
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -51,6 +53,10 @@ function EditPostForm() {
     const { data: post, isLoading: isPostLoading } = useDoc<BlogPost>(postRef);
 
     useEffect(() => {
+        setAppIsLoading(isUserLoading || isPostLoading);
+    }, [isUserLoading, isPostLoading, setAppIsLoading]);
+
+    useEffect(() => {
         if (post) {
             setTitle(post.title);
             setContent(post.content);
@@ -60,13 +66,15 @@ function EditPostForm() {
         }
     }, [post]);
 
-    if (isUserLoading || isPostLoading) {
-        return <div>Loading editor...</div>;
-    }
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.replace('/admin/login');
+        }
+    }, [isUserLoading, user, router]);
 
-    if (!user) {
-        router.replace('/admin/login');
-        return null;
+
+    if (isUserLoading || isPostLoading) {
+        return null; // The global loading spinner will be shown
     }
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +88,7 @@ function EditPostForm() {
         e.preventDefault();
         if (!firestore) return;
         setIsSaving(true);
+        setAppIsLoading(true);
         
         const postData = {
             title,
@@ -111,6 +120,8 @@ function EditPostForm() {
                 description: `Failed to save post: ${error.message}`
             });
             setIsSaving(false);
+        } finally {
+            setAppIsLoading(false);
         }
     };
 
@@ -141,7 +152,7 @@ function EditPostForm() {
                                 <Input id="category" value={category} onChange={(e) => setCategory(e.target.value)} required />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="content">Content (Markdown)</Label>
+                                <Label htmlFor="content">Content (HTML)</Label>
                                 <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required rows={15} />
                             </div>
                             <div className="flex justify-end gap-4">
@@ -160,7 +171,7 @@ export default function EditPostPage() {
     return (
         <>
             <Header />
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={null}>
                 <EditPostForm />
             </Suspense>
             <Footer />
