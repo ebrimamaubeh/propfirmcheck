@@ -177,12 +177,12 @@ export default function AdminDashboardPage() {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        const firms = JSON.parse(e.target?.result as string) as PropFirm[];
+        const firms = JSON.parse(e.target?.result as string) as Omit<PropFirm, 'id'>[];
         if (!Array.isArray(firms)) {
           throw new Error('JSON file must be an array of prop firms.');
         }
-        if (firms.some(firm => !firm.id)) {
-            throw new Error('All firms in the JSON file must have an "id" property.');
+        if (firms.some(firm => !firm.name)) {
+            throw new Error('All firms in the JSON file must have a "name" property.');
         }
         await bulkAddPropFirms(firms);
       } catch (error: any) {
@@ -201,7 +201,7 @@ export default function AdminDashboardPage() {
     reader.readAsText(file);
   };
 
-  const bulkAddPropFirms = async (firms: PropFirm[]) => {
+  const bulkAddPropFirms = async (firms: Omit<PropFirm, 'id'>[]) => {
     if (!firestore) return;
     setIsLoading(true);
     let firmsAdded = 0;
@@ -212,16 +212,18 @@ export default function AdminDashboardPage() {
       const firmsCollection = collection(firestore, 'prop_firms');
       
       for (const firm of firms) {
-        const docRef = doc(firmsCollection, firm.id);
+        const firmId = slugify(firm.name);
+        const firmDataWithId = { ...firm, id: firmId };
+        const docRef = doc(firmsCollection, firmId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             // Document exists, update it. Using set with merge is a robust way to update.
-            batch.set(docRef, firm, { merge: true });
+            batch.set(docRef, firmDataWithId, { merge: true });
             firmsUpdated++;
         } else {
             // Document does not exist, create it.
-            batch.set(docRef, firm);
+            batch.set(docRef, firmDataWithId);
             firmsAdded++;
         }
       }
