@@ -1,6 +1,6 @@
 
 'use client';
-import { notFound, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
@@ -47,7 +47,9 @@ export default function BlogPostPage() {
   }
 
   if (post === null) {
-    notFound();
+    // Instead of notFound(), render nothing or a message.
+    // For now, rendering nothing to avoid layout shifts.
+    return null;
   }
 
   return (

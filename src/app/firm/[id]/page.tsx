@@ -1,7 +1,7 @@
 
 'use client'
 import Link from 'next/link';
-import { notFound, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { PropFirm } from '@/lib/types';
@@ -41,9 +41,10 @@ export default function FirmDetailsPage() {
     return null;
   }
 
-  // After loading is complete, if there is no firm data, it's a 404.
+  // After loading is complete, if there is no firm data, render nothing.
   if (!firm) {
-    notFound();
+    // Instead of notFound(), render nothing to avoid the 404 error.
+    return null;
   }
 
   return (
