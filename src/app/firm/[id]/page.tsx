@@ -12,13 +12,15 @@ import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
 import { useLoading } from '@/context/loading-context';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function FirmDetailsPage() {
   const params = useParams();
   const id = params.id as string;
   const firestore = useFirestore();
   const { setIsLoading } = useLoading();
+  
+  const [firmData, setFirmData] = useState<PropFirm | null | undefined>(undefined);
 
   const handleLinkClick = () => {
     setIsLoading(true);
@@ -34,12 +36,22 @@ export default function FirmDetailsPage() {
   useEffect(() => {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
+  
+  useEffect(() => {
+    // Only update our local state once loading is complete.
+    if(!isLoading) {
+      setFirmData(firm);
+    }
+  }, [firm, isLoading]);
 
-  if (isLoading) {
+
+  // Show spinner while loading and we don't have a determined state yet
+  if (firmData === undefined) {
     return null;
   }
 
-  if (!firm) {
+  // Once loading is complete, if firm is null, then it's a real 404
+  if (firmData === null) {
     notFound();
   }
 
@@ -56,19 +68,19 @@ export default function FirmDetailsPage() {
       <div className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl font-headline">{firm.name}</CardTitle>
+            <CardTitle className="text-3xl font-headline">{firmData.name}</CardTitle>
             <CardDescription>
               <div className="flex flex-wrap items-center gap-4 mt-2">
-                <StarRating rating={firm.review.rating} />
-                <span className="text-sm text-muted-foreground">{firm.review.rating}/5 ({firm.review.count} reviews)</span>
+                <StarRating rating={firmData.review.rating} />
+                <span className="text-sm text-muted-foreground">{firmData.review.rating}/5 ({firmData.review.count} reviews)</span>
                 <div className="flex gap-2">
-                  {firm.type.map(t => <Badge variant="secondary" key={t}>{t} Firm</Badge>)}
+                  {firmData.type.map(t => <Badge variant="secondary" key={t}>{t} Firm</Badge>)}
                 </div>
               </div>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">In business for {firm.yearsInBusiness} years, offering up to ${firm.maxAllocation.toLocaleString()} in allocation.</p>
+            <p className="text-muted-foreground">In business for {firmData.yearsInBusiness} years, offering up to ${firmData.maxAllocation.toLocaleString()} in allocation.</p>
           </CardContent>
         </Card>
         
@@ -78,7 +90,7 @@ export default function FirmDetailsPage() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {firm.rules.map((rule) => (
+              {firmData.rules.map((rule) => (
                 <li key={rule.title} className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 shrink-0" />
                   <div>
@@ -99,22 +111,22 @@ export default function FirmDetailsPage() {
             <div>
               <h4 className="font-semibold mb-2">Trading Platforms</h4>
               <div className="flex flex-wrap gap-2">
-                {firm.platform.map((p) => <Badge key={p}>{p}</Badge>)}
+                {firmData.platform.map((p) => <Badge key={p}>{p}</Badge>)}
               </div>
             </div>
             <div>
               <h4 className="font-semibold mb-2">Promo Code</h4>
               <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
-                  <span className="font-mono text-lg font-bold text-primary">{firm.promoCode}</span>
-                  <CopyButton textToCopy={firm.promoCode} />
+                  <span className="font-mono text-lg font-bold text-primary">{firmData.promoCode}</span>
+                  <CopyButton textToCopy={firmData.promoCode} />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Button asChild size="lg" className="w-full">
-          <a href={firm.referralLink} target="_blank" rel="noopener noreferrer">
-            Visit {firm.name} <ArrowUpRight className="ml-2 h-4 w-4" />
+          <a href={firmData.referralLink} target="_blank" rel="noopener noreferrer">
+            Visit {firmData.name} <ArrowUpRight className="ml-2 h-4 w-4" />
           </a>
         </Button>
       </div>

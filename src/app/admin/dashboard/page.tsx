@@ -302,232 +302,220 @@ export default function AdminDashboardPage() {
   }
   
   return (
-    <div className="container flex-1">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <aside className="hidden lg:block lg:col-span-1">
-          {/* Left sidebar content goes here */}
-        </aside>
-        <main className="lg:col-span-10">
-           <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Manage your content here.</p>
-            </div>
-            {auth && <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>}
-          </div>
+    <>
+        <div className="flex items-center justify-between mb-8">
+        <div>
+            <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Manage your content here.</p>
+        </div>
+        {auth && <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>}
+        </div>
 
-          <Tabs defaultValue="blog">
-              <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="blog">Blog Posts</TabsTrigger>
-                  <TabsTrigger value="firms">Prop Firms</TabsTrigger>
-              </TabsList>
-              <TabsContent value="blog">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle>Blog Posts</CardTitle>
-                            <CardDescription>A list of all blog posts in your database.</CardDescription>
-                        </div>
+        <Tabs defaultValue="blog">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="blog">Blog Posts</TabsTrigger>
+                <TabsTrigger value="firms">Prop Firms</TabsTrigger>
+            </TabsList>
+            <TabsContent value="blog">
+            <Card>
+                <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Blog Posts</CardTitle>
+                        <CardDescription>A list of all blog posts in your database.</CardDescription>
+                    </div>
+                    <Button asChild>
+                        <Link href="/admin/dashboard/edit" onClick={handleLinkClick}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            New Post
+                        </Link>
+                    </Button>
+                </div>
+                </CardHeader>
+                <CardContent>
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Author</TableHead>
+                        <TableHead>Created At</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {posts && posts.length > 0 ? (
+                        posts.map(post => (
+                        <TableRow key={post.id}>
+                            <TableCell className="font-medium">{post.title}</TableCell>
+                            <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
+                            <TableCell>{post.author}</TableCell>
+                            <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
+                            <TableCell className="text-right">
+                            <Button asChild variant="ghost" size="icon">
+                                <Link href={`/admin/dashboard/edit?id=${post.id}`} onClick={handleLinkClick}>
+                                    <Edit className="h-4 w-4" />
+                                </Link>
+                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the post.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteBlogPost(post.id)}>Continue</AlertDialogAction>
+                                </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            </TableCell>
+                        </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            <p className="mb-4">No posts yet.</p>
+                            <Button onClick={seedBlogPosts}>Add Sample Posts</Button>
+                        </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+                </CardContent>
+            </Card>
+            </TabsContent>
+            <TabsContent value="firms">
+            <Card>
+                <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Prop Firms</CardTitle>
+                        <CardDescription>A list of all prop firms in your database.</CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept=".json"
+                            onChange={handleJsonUpload}
+                        />
+                        <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            Bulk Add via JSON
+                        </Button>
                         <Button asChild>
-                            <Link href="/admin/dashboard/edit" onClick={handleLinkClick}>
+                            <Link href="/admin/dashboard/firm/edit" onClick={handleLinkClick}>
                                 <PlusCircle className="mr-2 h-4 w-4" />
-                                New Post
+                                New Firm
                             </Link>
                         </Button>
+                            <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Bulk Delete
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete All Prop Firm Data?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This is a destructive and irreversible action. To confirm, please enter your password.
+                                </AlertDialogDescription>
+                                <div className="space-y-2 pt-2">
+                                    <Label htmlFor="password-confirm">Password</Label>
+                                    <Input
+                                        id="password-confirm"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="Enter your password"
+                                    />
+                                </div>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel id="close-bulk-delete-dialog" onClick={() => setPassword('')}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleBulkDelete} disabled={isBulkDeleting}>
+                                    {isBulkDeleting ? 'Deleting...' : 'Delete All Data'}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Category</TableHead>
-                          <TableHead>Author</TableHead>
-                          <TableHead>Created At</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {posts && posts.length > 0 ? (
-                          posts.map(post => (
-                            <TableRow key={post.id}>
-                              <TableCell className="font-medium">{post.title}</TableCell>
-                              <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
-                              <TableCell>{post.author}</TableCell>
-                              <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
-                              <TableCell className="text-right">
+                </div>
+                </CardHeader>
+                <CardContent>
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Rating</TableHead>
+                        <TableHead>Review Count</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {firms && firms.length > 0 ? (
+                        firms.map(firm => {
+                        const firmTypes = Array.isArray(firm.type) ? firm.type : [firm.type];
+                        return (
+                            <TableRow key={firm.id}>
+                            <TableCell className="font-medium">{firm.name}</TableCell>
+                            <TableCell><div className="flex gap-1">{firmTypes.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}</div></TableCell>
+                            <TableCell>{firm.review.rating}/5</TableCell>
+                            <TableCell>{firm.review.count}</TableCell>
+                            <TableCell className="text-right">
                                 <Button asChild variant="ghost" size="icon">
-                                    <Link href={`/admin/dashboard/edit?id=${post.id}`} onClick={handleLinkClick}>
+                                    <Link href={`/admin/dashboard/firm/edit?id=${firm.id}`} onClick={handleLinkClick}>
                                         <Edit className="h-4 w-4" />
                                     </Link>
                                 </Button>
                                 <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                      <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        This action cannot be undone. This will permanently delete the post.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => deleteBlogPost(post.id)}>Continue</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center">
-                              <p className="mb-4">No posts yet.</p>
-                              <Button onClick={seedBlogPosts}>Add Sample Posts</Button>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="firms">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle>Prop Firms</CardTitle>
-                            <CardDescription>A list of all prop firms in your database.</CardDescription>
-                        </div>
-                        <div className="flex gap-2">
-                           <input
-                              type="file"
-                              ref={fileInputRef}
-                              className="hidden"
-                              accept=".json"
-                              onChange={handleJsonUpload}
-                            />
-                            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-                                <Upload className="mr-2 h-4 w-4" />
-                                Bulk Add via JSON
-                            </Button>
-                            <Button asChild>
-                                <Link href="/admin/dashboard/firm/edit" onClick={handleLinkClick}>
-                                    <PlusCircle className="mr-2 h-4 w-4" />
-                                    New Firm
-                                </Link>
-                            </Button>
-                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                    <Button variant="destructive">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Bulk Delete
+                                    <Button variant="ghost" size="icon">
+                                    <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete All Prop Firm Data?</AlertDialogTitle>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        This is a destructive and irreversible action. To confirm, please enter your password.
+                                        This action cannot be undone. This will permanently delete the prop firm.
                                     </AlertDialogDescription>
-                                    <div className="space-y-2 pt-2">
-                                        <Label htmlFor="password-confirm">Password</Label>
-                                        <Input
-                                            id="password-confirm"
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            placeholder="Enter your password"
-                                        />
-                                    </div>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel id="close-bulk-delete-dialog" onClick={() => setPassword('')}>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={handleBulkDelete} disabled={isBulkDeleting}>
-                                        {isBulkDeleting ? 'Deleting...' : 'Delete All Data'}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
+                                    </AlertDialogFooter>
                                 </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Type</TableHead>
-                           <TableHead>Rating</TableHead>
-                           <TableHead>Review Count</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {firms && firms.length > 0 ? (
-                          firms.map(firm => {
-                            const firmTypes = Array.isArray(firm.type) ? firm.type : [firm.type];
-                            return (
-                                <TableRow key={firm.id}>
-                                <TableCell className="font-medium">{firm.name}</TableCell>
-                                <TableCell><div className="flex gap-1">{firmTypes.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}</div></TableCell>
-                                <TableCell>{firm.review.rating}/5</TableCell>
-                                <TableCell>{firm.review.count}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button asChild variant="ghost" size="icon">
-                                        <Link href={`/admin/dashboard/firm/edit?id=${firm.id}`} onClick={handleLinkClick}>
-                                            <Edit className="h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                    <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete the prop firm.
-                                        </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                    </AlertDialog>
-                                </TableCell>
-                                </TableRow>
-                            );
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center">
-                              <p>No prop firms found.</p>
+                                </AlertDialog>
                             </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-          </Tabs>
-        </main>
-        <aside className="hidden lg:block lg:col-span-1">
-          {/* Right sidebar content goes here */}
-        </aside>
-      </div>
-    </div>
+                            </TableRow>
+                        );
+                        })
+                    ) : (
+                        <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            <p>No prop firms found.</p>
+                        </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+                </CardContent>
+            </Card>
+            </TabsContent>
+        </Tabs>
+    </>
   );
 }
-
-    
