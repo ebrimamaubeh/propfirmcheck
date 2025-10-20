@@ -61,25 +61,27 @@ export default function BlogPostPage() {
               </Link>
             </Button>
           </div>
-          <article>
-            <header className="mb-8 text-center">
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">{post.title}</h1>
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-muted-foreground">
-                <Badge variant="secondary">{post.category}</Badge>
-                <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : ''}</span>
-                <span>by {post.author}</span>
-              </div>
-            </header>
-            
-            <Card>
-                <CardContent className="py-6">
-                    <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed mx-auto">
-                      <ReactMarkdown>{post.content}</ReactMarkdown>
-                    </div>
-                </CardContent>
-            </Card>
+          <div className="flex justify-center">
+            <article className="w-full">
+              <header className="mb-8 text-center">
+                <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">{post.title}</h1>
+                <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-muted-foreground">
+                  <Badge variant="secondary">{post.category}</Badge>
+                  <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : ''}</span>
+                  <span>by {post.author}</span>
+                </div>
+              </header>
+              
+              <Card>
+                  <CardContent className="py-6">
+                      <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed mx-auto">
+                        <ReactMarkdown>{post.content}</ReactMarkdown>
+                      </div>
+                  </CardContent>
+              </Card>
 
-          </article>
+            </article>
+          </div>
         </div>
       </main>
       <Footer />
