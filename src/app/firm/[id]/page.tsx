@@ -19,8 +19,6 @@ export default function FirmDetailsPage() {
   const id = params.id as string;
   const firestore = useFirestore();
   const { setIsLoading } = useLoading();
-  
-  const [firmData, setFirmData] = useState<PropFirm | null | undefined>(undefined);
 
   const handleLinkClick = () => {
     setIsLoading(true);
@@ -36,23 +34,15 @@ export default function FirmDetailsPage() {
   useEffect(() => {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
-  
-  useEffect(() => {
-    // Only update our local state once loading is complete.
-    if(!isLoading) {
-      setFirmData(firm);
-    }
-  }, [firm, isLoading]);
 
-
-  // Show spinner while loading and we don't have a determined state yet
-  if (firmData === undefined) {
-    return null;
+  // If loading is finished and there's no data, then it's a 404.
+  if (!isLoading && !firm) {
+    notFound();
   }
 
-  // Once loading is complete, if firm is null, then it's a real 404
-  if (firmData === null) {
-    notFound();
+  // While loading, we show nothing and let the global spinner handle it.
+  if (isLoading || !firm) {
+    return null;
   }
 
   return (
@@ -68,19 +58,19 @@ export default function FirmDetailsPage() {
       <div className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl font-headline">{firmData.name}</CardTitle>
+            <CardTitle className="text-3xl font-headline">{firm.name}</CardTitle>
             <CardDescription>
               <div className="flex flex-wrap items-center gap-4 mt-2">
-                <StarRating rating={firmData.review.rating} />
-                <span className="text-sm text-muted-foreground">{firmData.review.rating}/5 ({firmData.review.count} reviews)</span>
+                <StarRating rating={firm.review.rating} />
+                <span className="text-sm text-muted-foreground">{firm.review.rating}/5 ({firm.review.count} reviews)</span>
                 <div className="flex gap-2">
-                  {firmData.type.map(t => <Badge variant="secondary" key={t}>{t} Firm</Badge>)}
+                  {firm.type.map(t => <Badge variant="secondary" key={t}>{t} Firm</Badge>)}
                 </div>
               </div>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">In business for {firmData.yearsInBusiness} years, offering up to ${firmData.maxAllocation.toLocaleString()} in allocation.</p>
+            <p className="text-muted-foreground">In business for {firm.yearsInBusiness} years, offering up to ${firm.maxAllocation.toLocaleString()} in allocation.</p>
           </CardContent>
         </Card>
         
@@ -90,7 +80,7 @@ export default function FirmDetailsPage() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {firmData.rules.map((rule) => (
+              {firm.rules.map((rule) => (
                 <li key={rule.title} className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 shrink-0" />
                   <div>
@@ -111,22 +101,22 @@ export default function FirmDetailsPage() {
             <div>
               <h4 className="font-semibold mb-2">Trading Platforms</h4>
               <div className="flex flex-wrap gap-2">
-                {firmData.platform.map((p) => <Badge key={p}>{p}</Badge>)}
+                {firm.platform.map((p) => <Badge key={p}>{p}</Badge>)}
               </div>
             </div>
             <div>
               <h4 className="font-semibold mb-2">Promo Code</h4>
               <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
-                  <span className="font-mono text-lg font-bold text-primary">{firmData.promoCode}</span>
-                  <CopyButton textToCopy={firmData.promoCode} />
+                  <span className="font-mono text-lg font-bold text-primary">{firm.promoCode}</span>
+                  <CopyButton textToCopy={firm.promoCode} />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Button asChild size="lg" className="w-full">
-          <a href={firmData.referralLink} target="_blank" rel="noopener noreferrer">
-            Visit {firmData.name} <ArrowUpRight className="ml-2 h-4 w-4" />
+          <a href={firm.referralLink} target="_blank" rel="noopener noreferrer">
+            Visit {firm.name} <ArrowUpRight className="ml-2 h-4 w-4" />
           </a>
         </Button>
       </div>
