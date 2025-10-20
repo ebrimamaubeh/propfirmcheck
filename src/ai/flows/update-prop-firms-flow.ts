@@ -17,7 +17,7 @@ import {
   getDocs,
   writeBatch,
   doc,
-} from 'firebase/admin/firestore';
+} from 'firebase-admin/firestore';
 
 // Using the existing data source for now. This could be replaced with an API call.
 import propFirmsData from '@/lib/prop-firms-data.json';
