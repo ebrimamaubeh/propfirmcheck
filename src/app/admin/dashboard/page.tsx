@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, useUser, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, deleteDoc, doc, writeBatch, serverTimestamp, getDocs, addDoc } from 'firebase/firestore';
+import { collection, query, orderBy, deleteDoc, doc, writeBatch, serverTimestamp, getDocs, addDoc, getDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -177,6 +177,9 @@ export default function AdminDashboardPage() {
         if (!Array.isArray(firms)) {
           throw new Error('JSON file must be an array of prop firms.');
         }
+        if (firms.some(firm => !firm.id)) {
+            throw new Error('All firms in the JSON file must have an "id" property.');
+        }
         await bulkAddPropFirms(firms);
       } catch (error: any) {
         toast({
@@ -184,6 +187,11 @@ export default function AdminDashboardPage() {
           title: 'Invalid JSON file',
           description: error.message,
         });
+      } finally {
+        // Reset file input to allow re-uploading the same file
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
       }
     };
     reader.readAsText(file);
@@ -192,20 +200,40 @@ export default function AdminDashboardPage() {
   const bulkAddPropFirms = async (firms: PropFirm[]) => {
     if (!firestore) return;
     setIsLoading(true);
+    let firmsAdded = 0;
+    let firmsUpdated = 0;
+
     try {
       const batch = writeBatch(firestore);
       const firmsCollection = collection(firestore, 'prop_firms');
+      
+      for (const firm of firms) {
+        const docRef = doc(firmsCollection, firm.id);
+        const docSnap = await getDoc(docRef);
 
-      firms.forEach(firm => {
-        const docRef = firm.id ? doc(firmsCollection, firm.id) : doc(firmsCollection);
-        batch.set(docRef, firm);
-      });
+        if (docSnap.exists()) {
+            // Document exists, update it. Using set with merge is a robust way to update.
+            batch.set(docRef, firm, { merge: true });
+            firmsUpdated++;
+        } else {
+            // Document does not exist, create it.
+            batch.set(docRef, firm);
+            firmsAdded++;
+        }
+      }
 
       await batch.commit();
+
+      let description = '';
+      if(firmsAdded > 0) description += `${firmsAdded} firms created. `;
+      if(firmsUpdated > 0) description += `${firmsUpdated} firms updated.`;
+      if(description === '') description = 'No new firms to add or update.';
+      
       toast({
-        title: 'Success',
-        description: `${firms.length} prop firms have been added/updated.`,
+        title: 'Bulk Import Complete',
+        description: description,
       });
+
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -415,3 +443,5 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+    
