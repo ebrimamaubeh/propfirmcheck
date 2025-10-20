@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, useUser, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, deleteDoc, doc, writeBatch, serverTimestamp, getDocs, addDoc, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, deleteDoc, doc, writeBatch, serverTimestamp, getDocs, getDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -27,7 +27,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState, useRef } from 'react';
 import { useLoading } from '@/context/loading-context';
-
+import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 function slugify(text: string) {
   return text
@@ -70,6 +72,8 @@ export default function AdminDashboardPage() {
   const { toast } = useToast();
   const { setIsLoading } = useLoading();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [password, setPassword] = useState('');
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   const handleLinkClick = () => {
     setIsLoading(true);
@@ -245,6 +249,50 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (!user || !user.email || !firestore) {
+        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to perform this action.' });
+        return;
+    }
+    if (!password) {
+        toast({ variant: 'destructive', title: 'Password Required', description: 'Please enter your password to confirm.' });
+        return;
+    }
+
+    setIsBulkDeleting(true);
+    setIsLoading(true);
+
+    try {
+        const credential = EmailAuthProvider.credential(user.email, password);
+        await reauthenticateWithCredential(user, credential);
+        
+        // Re-authentication successful, proceed with deletion
+        const firmsCollection = collection(firestore, 'prop_firms');
+        const firmsSnapshot = await getDocs(firmsCollection);
+        const batch = writeBatch(firestore);
+
+        firmsSnapshot.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+
+        await batch.commit();
+
+        toast({ title: 'Success', description: 'All prop firm data has been deleted.' });
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Action Failed',
+            description: error.code === 'auth/wrong-password' ? 'Incorrect password.' : 'Could not complete the action: ' + error.message,
+        });
+    } finally {
+        setIsBulkDeleting(false);
+        setIsLoading(false);
+        setPassword('');
+        // This will close the dialog by re-evaluating the open prop
+        const closeButton = document.getElementById('close-bulk-delete-dialog');
+        closeButton?.click();
+    }
+  };
 
   if (isUserLoading || isPostsLoading || isFirmsLoading || (!user && !isUserLoading)) {
     return null; // The global loading spinner will be shown
@@ -372,6 +420,38 @@ export default function AdminDashboardPage() {
                                     New Firm
                                 </Link>
                             </Button>
+                             <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Bulk Delete
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete All Prop Firm Data?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This is a destructive and irreversible action. To confirm, please enter your password.
+                                    </AlertDialogDescription>
+                                    <div className="space-y-2 pt-2">
+                                        <Label htmlFor="password-confirm">Password</Label>
+                                        <Input
+                                            id="password-confirm"
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="Enter your password"
+                                        />
+                                    </div>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel id="close-bulk-delete-dialog" onClick={() => setPassword('')}>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleBulkDelete} disabled={isBulkDeleting}>
+                                        {isBulkDeleting ? 'Deleting...' : 'Delete All Data'}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </div>
                     </div>
                   </CardHeader>
@@ -443,5 +523,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-
-    
