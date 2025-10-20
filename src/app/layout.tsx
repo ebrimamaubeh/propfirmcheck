@@ -4,6 +4,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { LoadingProvider } from '@/context/loading-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { MainLayout } from '@/components/layout/main-layout';
 
 export const metadata: Metadata = {
   title: 'Prop Firm Check',
@@ -25,7 +28,13 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen bg-background flex flex-col">
         <LoadingProvider>
           <FirebaseClientProvider>
-            {children}
+            <Header />
+            <div className="flex-1 py-12 md:py-20">
+              <MainLayout>
+                {children}
+              </MainLayout>
+            </div>
+            <Footer />
           </FirebaseClientProvider>
           <LoadingSpinner />
         </LoadingProvider>

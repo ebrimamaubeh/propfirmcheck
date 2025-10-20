@@ -9,8 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 import { FirebaseError } from 'firebase/app';
 import { useLoading } from '@/context/loading-context';
 
@@ -77,45 +75,39 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <>
-      <Header />
-      <div className="flex-1 flex items-center justify-center py-12">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl">Admin Login</CardTitle>
-            <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <Button onClick={handleSignIn} className="w-full" disabled={isSigningIn}>
-                {isSigningIn ? 'Signing In...' : 'Sign In'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      <Footer />
-    </>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle className="text-2xl">Admin Login</CardTitle>
+        <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="admin@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleSignIn} className="w-full" disabled={isSigningIn}>
+            {isSigningIn ? 'Signing In...' : 'Sign In'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -4,8 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useUser, useDoc, useMemoFirebase } from '@/firebase';
 import { useFirestore } from '@/firebase';
 import { doc, setDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -125,55 +123,47 @@ function EditPostForm() {
     };
 
     return (
-        <main className="flex-1 py-12 md:py-20">
-            <div className="container max-w-3xl">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{postId ? 'Edit Post' : 'Create New Post'}</CardTitle>
-                        <CardDescription>Fill out the form below to save your blog post.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="title">Title</Label>
-                                <Input id="title" value={title} onChange={handleTitleChange} required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="slug">URL Slug</Label>
-                                <Input id="slug" value={slug} onChange={(e) => setSlug(slugify(e.target.value))} required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="author">Author</Label>
-                                <Input id="author" value={author} onChange={(e) => setAuthor(e.target.value)} required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="category">Category</Label>
-                                <Input id="category" value={category} onChange={(e) => setCategory(e.target.value)} required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="content">Content (Markdown)</Label>
-                                <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required rows={15} />
-                            </div>
-                            <div className="flex justify-end gap-4">
-                                <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
-                                <Button type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Post'}</Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        </main>
+        <Card>
+            <CardHeader>
+                <CardTitle>{postId ? 'Edit Post' : 'Create New Post'}</CardTitle>
+                <CardDescription>Fill out the form below to save your blog post.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="title">Title</Label>
+                        <Input id="title" value={title} onChange={handleTitleChange} required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="slug">URL Slug</Label>
+                        <Input id="slug" value={slug} onChange={(e) => setSlug(slugify(e.target.value))} required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="author">Author</Label>
+                        <Input id="author" value={author} onChange={(e) => setAuthor(e.target.value)} required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="category">Category</Label>
+                        <Input id="category" value={category} onChange={(e) => setCategory(e.target.value)} required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="content">Content (Markdown)</Label>
+                        <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required rows={15} />
+                    </div>
+                    <div className="flex justify-end gap-4">
+                        <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+                        <Button type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Post'}</Button>
+                    </div>
+                </form>
+            </CardContent>
+        </Card>
     );
 }
 
 export default function EditPostPage() {
     return (
-        <>
-            <Header />
-            <Suspense fallback={null}>
-                <EditPostForm />
-            </Suspense>
-            <Footer />
-        </>
+        <Suspense fallback={null}>
+            <EditPostForm />
+        </Suspense>
     );
 }

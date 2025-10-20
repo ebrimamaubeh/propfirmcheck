@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { useAuth, useUser, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, deleteDoc, doc, writeBatch, serverTimestamp, getDocs, addDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -220,168 +218,162 @@ export default function AdminDashboardPage() {
   
   return (
     <>
-      <Header />
-      <main className="flex-1 py-12 md:py-20">
-        <div className="container">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Manage your content here.</p>
-            </div>
-            {auth && <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>}
-          </div>
-
-          <Tabs defaultValue="blog">
-              <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="blog">Blog Posts</TabsTrigger>
-                  <TabsTrigger value="firms">Prop Firms</TabsTrigger>
-              </TabsList>
-              <TabsContent value="blog">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle>Blog Posts</CardTitle>
-                            <CardDescription>A list of all blog posts in your database.</CardDescription>
-                        </div>
-                        <Button asChild>
-                            <Link href="/admin/dashboard/edit">
-                                <PlusCircle className="mr-2 h-4 w-4" />
-                                New Post
-                            </Link>
-                        </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Category</TableHead>
-                          <TableHead>Author</TableHead>
-                          <TableHead>Created At</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {posts && posts.length > 0 ? (
-                          posts.map(post => (
-                            <TableRow key={post.id}>
-                              <TableCell className="font-medium">{post.title}</TableCell>
-                              <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
-                              <TableCell>{post.author}</TableCell>
-                              <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
-                              <TableCell className="text-right">
-                                <Button asChild variant="ghost" size="icon">
-                                    <Link href={`/admin/dashboard/edit?id=${post.id}`}>
-                                        <Edit className="h-4 w-4" />
-                                    </Link>
-                                </Button>
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                      <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        This action cannot be undone. This will permanently delete the post.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => deleteBlogPost(post.id)}>Continue</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center">
-                              <p className="mb-4">No posts yet.</p>
-                              <Button onClick={seedBlogPosts}>Add Sample Posts</Button>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="firms">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Add New Prop Firm</CardTitle>
-                    <CardDescription>Fill out the form to add a new prop firm.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <PropFirmForm onSubmit={handleAddPropFirm} />
-                  </CardContent>
-                </Card>
-                <Card className="mt-8">
-                  <CardHeader>
-                    <CardTitle>Existing Prop Firms</CardTitle>
-                    <CardDescription>A list of all prop firms in your database.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Type</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {firms && firms.length > 0 ? (
-                          firms.map(firm => (
-                            <TableRow key={firm.id}>
-                              <TableCell className="font-medium">{firm.name}</TableCell>
-                              <TableCell><Badge variant="secondary">{firm.type}</Badge></TableCell>
-                              <TableCell className="text-right">
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                      <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        This action cannot be undone. This will permanently delete the prop firm.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={3} className="h-24 text-center">
-                              <p className="mb-4">No prop firms yet.</p>
-                              <Button onClick={seedPropFirms}>Seed from JSON</Button>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-          </Tabs>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Manage your content here.</p>
         </div>
-      </main>
-      <Footer />
+        {auth && <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>}
+      </div>
+
+      <Tabs defaultValue="blog">
+          <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="blog">Blog Posts</TabsTrigger>
+              <TabsTrigger value="firms">Prop Firms</TabsTrigger>
+          </TabsList>
+          <TabsContent value="blog">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Blog Posts</CardTitle>
+                        <CardDescription>A list of all blog posts in your database.</CardDescription>
+                    </div>
+                    <Button asChild>
+                        <Link href="/admin/dashboard/edit">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            New Post
+                        </Link>
+                    </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Author</TableHead>
+                      <TableHead>Created At</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {posts && posts.length > 0 ? (
+                      posts.map(post => (
+                        <TableRow key={post.id}>
+                          <TableCell className="font-medium">{post.title}</TableCell>
+                          <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
+                          <TableCell>{post.author}</TableCell>
+                          <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
+                          <TableCell className="text-right">
+                            <Button asChild variant="ghost" size="icon">
+                                <Link href={`/admin/dashboard/edit?id=${post.id}`}>
+                                    <Edit className="h-4 w-4" />
+                                </Link>
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the post.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteBlogPost(post.id)}>Continue</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          <p className="mb-4">No posts yet.</p>
+                          <Button onClick={seedBlogPosts}>Add Sample Posts</Button>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="firms">
+            <Card>
+              <CardHeader>
+                <CardTitle>Add New Prop Firm</CardTitle>
+                <CardDescription>Fill out the form to add a new prop firm.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PropFirmForm onSubmit={handleAddPropFirm} />
+              </CardContent>
+            </Card>
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle>Existing Prop Firms</CardTitle>
+                <CardDescription>A list of all prop firms in your database.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {firms && firms.length > 0 ? (
+                      firms.map(firm => (
+                        <TableRow key={firm.id}>
+                          <TableCell className="font-medium">{firm.name}</TableCell>
+                          <TableCell><Badge variant="secondary">{firm.type}</Badge></TableCell>
+                          <TableCell className="text-right">
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the prop firm.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={3} className="h-24 text-center">
+                          <p className="mb-4">No prop firms yet.</p>
+                          <Button onClick={seedPropFirms}>Seed from JSON</Button>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+      </Tabs>
     </>
   );
 }
