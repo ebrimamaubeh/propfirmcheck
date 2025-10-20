@@ -198,7 +198,7 @@ export default function AdminDashboardPage() {
     reader.readAsText(file);
   };
 
-  const bulkAddPropFirms = async (firms: (Omit<PropFirm, 'id'> | null)[]) => {
+  const bulkAddPropFirms = async (firms: any[]) => {
     if (!firestore) return;
     setIsLoading(true);
     let firmsAdded = 0;
@@ -213,13 +213,17 @@ export default function AdminDashboardPage() {
       const firmsCollection = collection(firestore, 'prop_firms');
       
       for (const firm of validFirms) {
+        // Generate a consistent ID based on the firm's name.
         const firmId = slugify(firm.name);
-        const firmDataWithId = { ...firm, id: firmId };
+        
+        // Use this generated ID for both the document ID and the 'id' field in the data.
+        const firmDataWithId: PropFirm = { ...firm, id: firmId };
+        
         const docRef = doc(firmsCollection, firmId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            // Document exists, update it. Using set with merge is a robust way to update.
+            // Document exists, update it.
             batch.set(docRef, firmDataWithId, { merge: true });
             firmsUpdated++;
         } else {

@@ -190,7 +190,7 @@ function EditFirmForm() {
                     <FormControl>
                       <Input placeholder="topstep" {...field} disabled />
                     </FormControl>
-                     <FormDescription>This will be used in the URL and cannot be changed.</FormDescription>
+                     <FormDescription>This is auto-generated and cannot be changed.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
