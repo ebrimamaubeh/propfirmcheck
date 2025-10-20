@@ -149,7 +149,9 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                                 </div>
                             </TableCell>
                             <TableCell className="text-center hidden md:table-cell">{firm.yearsInBusiness}</TableCell>
-                            <TableCell className="text-right hidden md:table-cell">${firm.maxAllocation.toLocaleString()}</TableCell>
+                            <TableCell className="text-right hidden md:table-cell">
+                                {firm.maxAllocation ? `$${firm.maxAllocation.toLocaleString()}` : 'N/A'}
+                            </TableCell>
                             <TableCell className="hidden sm:table-cell">
                                 <div className="flex flex-wrap gap-1">
                                     {firm.platform.slice(0, 2).map(p => <Badge key={p} variant="secondary">{p}</Badge>)}
