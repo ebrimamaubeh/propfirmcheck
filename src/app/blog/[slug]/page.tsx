@@ -61,10 +61,10 @@ export default function BlogPostPage() {
               </Link>
             </Button>
           </div>
-          <article>
+          <article className="text-center">
             <header className="mb-8">
               <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">{post.title}</h1>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-muted-foreground">
                 <Badge variant="secondary">{post.category}</Badge>
                 <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : ''}</span>
                 <span>by {post.author}</span>
@@ -73,7 +73,7 @@ export default function BlogPostPage() {
             
             <Card>
                 <CardContent className="py-6">
-                    <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed">
+                    <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed text-left">
                       <ReactMarkdown>{post.content}</ReactMarkdown>
                     </div>
                 </CardContent>
