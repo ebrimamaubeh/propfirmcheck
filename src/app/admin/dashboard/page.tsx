@@ -473,7 +473,7 @@ export default function AdminDashboardPage() {
                           firms.map(firm => (
                             <TableRow key={firm.id}>
                               <TableCell className="font-medium">{firm.name}</TableCell>
-                              <TableCell><Badge variant="secondary">{firm.type}</Badge></TableCell>
+                              <TableCell><div className="flex gap-1">{firm.type.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}</div></TableCell>
                               <TableCell>{firm.review.rating}/5</TableCell>
                               <TableCell>{firm.review.count}</TableCell>
                               <TableCell className="text-right">

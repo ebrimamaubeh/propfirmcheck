@@ -61,7 +61,9 @@ export default function FirmDetailsPage() {
               <div className="flex flex-wrap items-center gap-4 mt-2">
                 <StarRating rating={firm.review.rating} />
                 <span className="text-sm text-muted-foreground">{firm.review.rating}/5 ({firm.review.count} reviews)</span>
-                <Badge variant="secondary">{firm.type} Firm</Badge>
+                <div className="flex gap-2">
+                  {firm.type.map(t => <Badge variant="secondary" key={t}>{t} Firm</Badge>)}
+                </div>
               </div>
             </CardDescription>
           </CardHeader>

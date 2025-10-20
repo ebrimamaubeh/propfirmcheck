@@ -3,7 +3,7 @@ import { Timestamp } from 'firebase/firestore';
 export type PropFirm = {
   id: string;
   name: string;
-  type: 'Futures' | 'Forex';
+  type: ('Futures' | 'Forex')[];
   review: {
     rating: number;
     count: number;

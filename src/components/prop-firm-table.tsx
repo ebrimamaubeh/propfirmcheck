@@ -14,12 +14,12 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLoading } from '@/context/loading-context';
 
-type FilterType = 'All' | 'Futures' | 'Forex';
+const FIRM_TYPES = ['Futures', 'Forex'];
 const FIRMS_PER_PAGE = 5;
 
 export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<FilterType>('All');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const { setIsLoading } = useLoading();
@@ -28,17 +28,24 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
   const handleLinkClick = () => {
     setIsLoading(true);
   };
+  
+  const toggleFilter = (type: string) => {
+    setCurrentPage(1);
+    setActiveFilters(prev => 
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    );
+  }
 
   const filteredFirms = useMemo(() => {
     return firms
       .filter(firm => {
-        if (filterType === 'All') return true;
-        return firm.type === filterType;
+        if (activeFilters.length === 0) return true;
+        return activeFilters.some(filter => firm.type.includes(filter));
       })
       .filter(firm =>
         firm.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-  }, [firms, searchTerm, filterType]);
+  }, [firms, searchTerm, activeFilters]);
 
   const totalPages = Math.ceil(filteredFirms.length / FIRMS_PER_PAGE);
   const paginatedFirms = filteredFirms.slice(
@@ -51,6 +58,13 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
       setCurrentPage(page);
     }
   };
+
+  const allFilters = ['All', ...FIRM_TYPES];
+
+  const handleAllClick = () => {
+    setActiveFilters([]);
+    setCurrentPage(1);
+  }
 
   return (
     <Card className="w-full shadow-lg">
@@ -75,9 +89,10 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
               Filters
             </Button>
             <div className="hidden md:flex items-center gap-1 p-1 bg-secondary rounded-lg">
-                <Button variant={filterType === 'All' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('All'); setCurrentPage(1); }}>All</Button>
-                <Button variant={filterType === 'Futures' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Futures'); setCurrentPage(1); }}>Futures</Button>
-                <Button variant={filterType === 'Forex' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Forex'); setCurrentPage(1); }}>Forex</Button>
+                <Button variant={activeFilters.length === 0 ? 'default' : 'ghost'} size="sm" onClick={handleAllClick}>All</Button>
+                {FIRM_TYPES.map(type => (
+                    <Button key={type} variant={activeFilters.includes(type) ? 'default' : 'ghost'} size="sm" onClick={() => toggleFilter(type)}>{type}</Button>
+                ))}
             </div>
           </div>
         </div>
@@ -91,9 +106,10 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                     className="overflow-hidden mb-4 md:hidden"
                 >
                     <div className="flex items-center justify-center gap-2 p-1 bg-secondary rounded-lg">
-                        <Button className="flex-1" variant={filterType === 'All' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('All'); setCurrentPage(1); }}>All</Button>
-                        <Button className="flex-1" variant={filterType === 'Futures' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Futures'); setCurrentPage(1); }}>Futures</Button>
-                        <Button className="flex-1" variant={filterType === 'Forex' ? 'default' : 'ghost'} size="sm" onClick={() => { setFilterType('Forex'); setCurrentPage(1); }}>Forex</Button>
+                        <Button className="flex-1" variant={activeFilters.length === 0 ? 'default' : 'ghost'} size="sm" onClick={handleAllClick}>All</Button>
+                        {FIRM_TYPES.map(type => (
+                            <Button key={type} className="flex-1" variant={activeFilters.includes(type) ? 'default' : 'ghost'} size="sm" onClick={() => toggleFilter(type)}>{type}</Button>
+                        ))}
                     </div>
                 </motion.div>
             )}
@@ -118,7 +134,9 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
                         <span className="font-semibold">{firm.name}</span>
-                        <Badge variant="outline" className="w-fit mt-1">{firm.type}</Badge>
+                        <div className="flex gap-1 mt-1">
+                          {firm.type.map(t => <Badge variant="outline" key={t}>{t}</Badge>)}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-center">

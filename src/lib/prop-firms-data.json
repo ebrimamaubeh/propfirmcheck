@@ -1,8 +1,9 @@
+
 [
   {
     "id": "topstep",
     "name": "Topstep",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.7, "count": 2500 },
     "yearsInBusiness": 10,
     "maxAllocation": 150000,
@@ -18,7 +19,7 @@
   {
     "id": "ftmo",
     "name": "FTMO",
-    "type": "Forex",
+    "type": ["Forex"],
     "review": { "rating": 4.9, "count": 8000 },
     "yearsInBusiness": 8,
     "maxAllocation": 200000,
@@ -34,7 +35,7 @@
   {
     "id": "apex-trader-funding",
     "name": "Apex Trader Funding",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.8, "count": 12000 },
     "yearsInBusiness": 3,
     "maxAllocation": 300000,
@@ -49,7 +50,7 @@
   {
     "id": "the-funded-trader",
     "name": "The Funded Trader",
-    "type": "Forex",
+    "type": ["Forex"],
     "review": { "rating": 4.6, "count": 9500 },
     "yearsInBusiness": 3,
     "maxAllocation": 400000,
@@ -66,7 +67,7 @@
   {
     "id": "bulenox",
     "name": "Bullenox",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.5, "count": 1800 },
     "yearsInBusiness": 2,
     "maxAllocation": 250000,
@@ -82,7 +83,7 @@
   {
     "id": "leeloo-trading",
     "name": "Leeloo Trading",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.5, "count": 1500 },
     "yearsInBusiness": 5,
     "maxAllocation": 300000,
@@ -97,7 +98,7 @@
   {
     "id": "myforexfunds",
     "name": "My Forex Funds",
-    "type": "Forex",
+    "type": ["Forex"],
     "review": { "rating": 4.9, "count": 15000 },
     "yearsInBusiness": 2,
     "maxAllocation": 300000,
@@ -113,7 +114,7 @@
   {
     "id": "oneup-trader",
     "name": "OneUp Trader",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.6, "count": 2200 },
     "yearsInBusiness": 4,
     "maxAllocation": 250000,
@@ -128,7 +129,7 @@
   {
     "id": "true-forex-funds",
     "name": "True Forex Funds",
-    "type": "Forex",
+    "type": ["Forex"],
     "review": { "rating": 4.7, "count": 4500 },
     "yearsInBusiness": 2,
     "maxAllocation": 400000,
@@ -144,7 +145,7 @@
   {
     "id": "take-profit-trader",
     "name": "Take Profit Trader",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.4, "count": 900 },
     "yearsInBusiness": 2,
     "maxAllocation": 150000,
@@ -159,7 +160,7 @@
   {
     "id": "e8-funding",
     "name": "E8 Funding",
-    "type": "Forex",
+    "type": ["Forex"],
     "review": { "rating": 4.8, "count": 6000 },
     "yearsInBusiness": 2,
     "maxAllocation": 300000,
@@ -175,7 +176,7 @@
   {
     "id": "ticktick-trader",
     "name": "TickTick Trader",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.7, "count": 3000 },
     "yearsInBusiness": 3,
     "maxAllocation": 100000,
@@ -190,7 +191,7 @@
   {
     "id": "fidelcrest",
     "name": "Fidelcrest",
-    "type": "Forex",
+    "type": ["Forex"],
     "review": { "rating": 4.5, "count": 3500 },
     "yearsInBusiness": 4,
     "maxAllocation": 1000000,
@@ -205,7 +206,7 @@
   {
     "id": "the-5-percenters",
     "name": "The 5%ers",
-    "type": "Forex",
+    "type": ["Forex"],
     "review": { "rating": 4.8, "count": 7000 },
     "yearsInBusiness": 6,
     "maxAllocation": 4000000,
@@ -220,7 +221,7 @@
   {
     "id": "uprofit-trader",
     "name": "UProfit Trader",
-    "type": "Futures",
+    "type": ["Futures"],
     "review": { "rating": 4.6, "count": 1200 },
     "yearsInBusiness": 4,
     "maxAllocation": 200000,

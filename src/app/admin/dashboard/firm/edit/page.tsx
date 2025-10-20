@@ -18,17 +18,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Trash2 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const ruleSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
 });
 
+const firmTypes = ["Futures", "Forex"] as const;
+
 const firmSchema = z.object({
   id: z.string().min(1, "ID is required"),
   name: z.string().min(1, "Name is required"),
-  type: z.enum(['Futures', 'Forex']),
+  type: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
+  }),
   review: z.object({
     rating: z.coerce.number().min(0).max(5),
     count: z.coerce.number().min(0),
@@ -59,7 +63,7 @@ function EditFirmForm() {
     defaultValues: {
       id: '',
       name: '',
-      type: 'Futures',
+      type: [],
       review: { rating: 0, count: 0 },
       yearsInBusiness: 0,
       maxAllocation: 0,
@@ -191,27 +195,56 @@ function EditFirmForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Futures">Futures</SelectItem>
-                          <SelectItem value="Forex">Forex</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                control={form.control}
+                name="type"
+                render={() => (
+                  <FormItem>
+                    <div className="mb-4">
+                      <FormLabel className="text-base">Firm Types</FormLabel>
+                      <FormDescription>
+                        Select the types that apply to this firm.
+                      </FormDescription>
+                    </div>
+                    {firmTypes.map((item) => (
+                      <FormField
+                        key={item}
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value, item])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== item
+                                          )
+                                        )
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {item}
+                              </FormLabel>
+                            </FormItem>
+                          )
+                        }}
+                      />
+                    ))}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="yearsInBusiness"
@@ -374,7 +407,3 @@ export default function EditFirmPage() {
     </Suspense>
   );
 }
-
-    
-
-    

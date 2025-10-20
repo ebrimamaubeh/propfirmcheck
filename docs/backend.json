@@ -58,8 +58,12 @@
           "description": "The referral link for the prop firm."
         },
         "type": {
-          "type": "string",
-          "description": "The type of the prop firm, either 'forex' or 'futures'."
+          "type": "array",
+          "description": "The type of the prop firm, e.g., 'forex' or 'futures'.",
+          "items": {
+            "type": "string",
+            "enum": ["Futures", "Forex"]
+          }
         },
         "promoCode": {
           "type": "string",
