@@ -5,6 +5,7 @@ import type { PropFirm } from '@/lib/types';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import { useLoading } from '@/context/loading-context';
+import { MainLayout } from '@/components/layout/main-layout';
 
 export default function Home() {
   const firestore = useFirestore();
@@ -22,7 +23,7 @@ export default function Home() {
   }, [isLoading, setIsLoading]);
 
   return (
-    <>
+    <MainLayout>
       <section className="text-center mb-12">
         <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">The Prop Firm That Best Matches You</h1>
         <p className="max-w-2xl mx-auto text-muted-foreground md:text-lg">
@@ -37,6 +38,6 @@ export default function Home() {
           <PropFirmTable firms={firms} />
         )}
       </section>
-    </>
+    </MainLayout>
   );
 }

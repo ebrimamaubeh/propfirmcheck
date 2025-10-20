@@ -33,27 +33,29 @@ export default function BlogPage() {
 
   const categories = useMemo(() => {
     if (!posts) return [];
-    return ['All', ...new Set(posts.map(p => p.category))];
+    const allCategories = ['All', ...new Set(posts.map(p => p.category))];
+    // The "All" category is handled by setting activeCategory to null, so we can pass it to the layout.
+    return allCategories;
   }, [posts]);
 
   const filteredPosts = useMemo(() => {
-    return (posts || [])
-      .filter(post => {
-        if (activeCategory && activeCategory !== 'All' && post.category !== activeCategory) {
-          return false;
-        }
-        if (searchTerm && !post.title.toLowerCase().includes(searchTerm.toLowerCase())) {
-          return false;
-        }
-        return true;
-      });
+    if (!posts) return [];
+    return posts.filter(post => {
+      const categoryMatch = activeCategory ? post.category === activeCategory : true;
+      const searchMatch = searchTerm ? post.title.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+      return categoryMatch && searchMatch;
+    });
   }, [posts, searchTerm, activeCategory]);
+
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category === 'All' ? null : category);
+  };
 
   return (
     <BlogLayout
       categories={categories}
-      activeCategory={activeCategory}
-      onCategoryChange={setActiveCategory}
+      activeCategory={activeCategory || 'All'}
+      onCategoryChange={handleCategoryChange}
     >
       <div className="text-center mb-12">
         <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">The Blog</h1>
@@ -73,32 +75,31 @@ export default function BlogPage() {
         />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-        {isLoading && (
-          null
-        )}
-        {!isLoading && filteredPosts.map(post => (
-          <Link href={`/blog/${post.slug}`} key={post.id}>
-            <Card className="h-full hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                <CardDescription>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-                    <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : '...'}</span>
-                    <span>&middot;</span>
-                    <span>By {post.author}</span>
-                  </div>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Badge variant="secondary">{post.category}</Badge>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
-
-      {!isLoading && filteredPosts.length === 0 && (
+      {isLoading ? (
+        null
+      ) : filteredPosts.length > 0 ? (
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+          {filteredPosts.map(post => (
+            <Link href={`/blog/${post.slug}`} key={post.id}>
+              <Card className="h-full hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="line-clamp-2">{post.title}</CardTitle>
+                  <CardDescription>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                      <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : '...'}</span>
+                      <span>&middot;</span>
+                      <span>By {post.author}</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="secondary">{post.category}</Badge>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      ) : (
         <div className="text-center col-span-full py-16">
           <p className="text-muted-foreground">No posts found. Try a different search or filter.</p>
         </div>

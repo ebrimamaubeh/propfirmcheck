@@ -28,9 +28,9 @@ export default function RootLayout({
         <LoadingProvider>
           <FirebaseClientProvider>
             <Header />
-            <div className="flex-1 py-12 md:py-20">
+            <main className="flex-1 py-12 md:py-20">
               {children}
-            </div>
+            </main>
             <Footer />
           </FirebaseClientProvider>
           <LoadingSpinner />

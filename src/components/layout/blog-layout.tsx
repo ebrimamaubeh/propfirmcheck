@@ -8,14 +8,14 @@ interface BlogLayoutProps {
   children: ReactNode;
   categories: string[];
   activeCategory: string | null;
-  onCategoryChange: (category: string | null) => void;
+  onCategoryChange: (category: string) => void;
 }
 
 export function BlogLayout({ children, categories, activeCategory, onCategoryChange }: BlogLayoutProps) {
   return (
     <div className="container flex-1">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <aside className="hidden md:block md:col-span-1">
+        <aside className="md:col-span-1">
             <Card>
                 <CardHeader>
                     <CardTitle>Categories</CardTitle>
@@ -25,8 +25,8 @@ export function BlogLayout({ children, categories, activeCategory, onCategoryCha
                         {categories.map(category => (
                             <Button
                                 key={category}
-                                variant={activeCategory === category || (activeCategory === null && category === 'All') ? 'default' : 'ghost'}
-                                onClick={() => onCategoryChange(category === 'All' ? null : category)}
+                                variant={activeCategory === category ? 'default' : 'ghost'}
+                                onClick={() => onCategoryChange(category)}
                                 className="justify-start"
                             >
                                 {category}
