@@ -198,7 +198,7 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                             <TableCell className="font-medium">
                             <div className="flex flex-col">
                                 <span className="font-semibold">{firm.name}</span>
-                                <div className="flex flex-col items-start gap-1 mt-1">
+                                <div className="grid grid-cols-2 gap-1 mt-1">
                                 {firmTypes.map(t => <Badge variant="outline" key={t} className="px-1.5 py-0 text-[10px]">{t}</Badge>)}
                                 </div>
                             </div>
