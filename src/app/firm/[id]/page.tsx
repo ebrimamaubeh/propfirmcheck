@@ -22,7 +22,7 @@ export default function FirmDetailsPage() {
 
   const handleLinkClick = () => {
     setIsLoading(true);
-  }
+  };
 
   const firmRef = useMemoFirebase(() => {
     if (!firestore || !id) return null;
@@ -35,14 +35,15 @@ export default function FirmDetailsPage() {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
 
-  // If loading is finished and there's no data, then it's a 404.
-  if (!isLoading && !firm) {
-    notFound();
+  // While loading, the global spinner is active via the useEffect above.
+  // We render nothing here to prevent any rendering with incomplete data.
+  if (isLoading) {
+    return null;
   }
 
-  // While loading, we show nothing and let the global spinner handle it.
-  if (isLoading || !firm) {
-    return null;
+  // After loading is complete, if there is no firm data, it's a 404.
+  if (!firm) {
+    notFound();
   }
 
   return (
