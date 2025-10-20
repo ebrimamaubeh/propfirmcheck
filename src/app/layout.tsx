@@ -6,6 +6,7 @@ import { LoadingProvider } from '@/context/loading-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { MainLayout } from '@/components/layout/main-layout';
 
 export const metadata: Metadata = {
   title: 'Prop Firm Check',
@@ -29,7 +30,9 @@ export default function RootLayout({
           <FirebaseClientProvider>
             <Header />
             <main className="flex-1 py-12 md:py-20">
-              {children}
+              <MainLayout>
+                {children}
+              </MainLayout>
             </main>
             <Footer />
           </FirebaseClientProvider>

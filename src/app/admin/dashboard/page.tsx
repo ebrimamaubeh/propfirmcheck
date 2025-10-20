@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, RefreshCw } from 'lucide-react';
 import type { BlogPost, PropFirm } from '@/lib/types';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -24,10 +24,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEffect } from 'react';
-import PropFirmForm from '@/components/prop-firm-form';
-import propFirmsData from '@/lib/prop-firms-data.json';
+import { useEffect, useState } from 'react';
 import { useLoading } from '@/context/loading-context';
+import { updatePropFirms } from '@/ai/flows/update-prop-firms-flow';
+
 
 function slugify(text: string) {
   return text
@@ -69,6 +69,7 @@ export default function AdminDashboardPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { setIsLoading } = useLoading();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const blogPostsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -80,7 +81,8 @@ export default function AdminDashboardPage() {
     if (!firestore) return null;
     return query(collection(firestore, 'prop_firms'), orderBy('name', 'asc'));
   }, [firestore]);
-  const { data: firms, isLoading: isFirmsLoading } = useCollection<PropFirm>(propFirmsQuery);
+  const { data: firms, isLoading: isFirmsLoading, error } = useCollection<PropFirm>(propFirmsQuery);
+
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -120,38 +122,27 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const seedPropFirms = async () => {
-    if (!firestore) return;
+  const handleSyncPropFirms = async () => {
+    setIsSyncing(true);
     setIsLoading(true);
     try {
-        const firmsCollection = collection(firestore, 'prop_firms');
-        const existingFirmsSnap = await getDocs(firmsCollection);
-        if(!existingFirmsSnap.empty) {
-          toast({ title: 'Info', description: 'Prop firms collection is not empty. Seeding aborted.' });
-          return;
-        }
-
-        const batch = writeBatch(firestore);
-        propFirmsData.forEach((firm: any) => {
-            const docRef = doc(firmsCollection, firm.id);
-            batch.set(docRef, firm);
-        });
-
-        await batch.commit();
-        toast({
-            title: 'Success',
-            description: 'Prop firms have been seeded from JSON file.',
-        });
+      const result = await updatePropFirms();
+      toast({
+        title: 'Sync Complete',
+        description: result,
+      });
     } catch (error: any) {
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Failed to seed prop firms: ' + error.message,
-        });
+      toast({
+        variant: 'destructive',
+        title: 'Sync Failed',
+        description: error.message || 'An unexpected error occurred during sync.',
+      });
     } finally {
-        setIsLoading(false);
+      setIsSyncing(false);
+      setIsLoading(false);
     }
   };
+
 
   const deleteBlogPost = async (postId: string) => {
     if (!firestore) return;
@@ -193,187 +184,180 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleAddPropFirm = async (firmData: Omit<PropFirm, 'id'>) => {
-    if (!firestore) return;
-    setIsLoading(true);
-    try {
-        const collectionRef = collection(firestore, 'prop_firms');
-        await addDoc(collectionRef, firmData);
-        toast({ title: "Success", description: "Prop firm added successfully." });
-    } catch (error: any) {
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: `Failed to add prop firm: ${error.message}`
-        });
-    } finally {
-        setIsLoading(false);
-    }
-  };
-
-
   if (isUserLoading || isPostsLoading || isFirmsLoading || (!user && !isUserLoading)) {
     return null; // The global loading spinner will be shown
   }
   
   return (
-    <>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage your content here.</p>
-        </div>
-        {auth && <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>}
-      </div>
+    <div className="container flex-1">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
+        <aside className="hidden md:block md:col-span-1">
+          {/* Left sidebar content goes here */}
+        </aside>
+        <main className="md:col-span-4">
+           <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
+              <p className="text-muted-foreground">Manage your content here.</p>
+            </div>
+            {auth && <Button variant="outline" onClick={() => auth.signOut()}>Sign Out</Button>}
+          </div>
 
-      <Tabs defaultValue="blog">
-          <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="blog">Blog Posts</TabsTrigger>
-              <TabsTrigger value="firms">Prop Firms</TabsTrigger>
-          </TabsList>
-          <TabsContent value="blog">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle>Blog Posts</CardTitle>
-                        <CardDescription>A list of all blog posts in your database.</CardDescription>
+          <Tabs defaultValue="blog">
+              <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="blog">Blog Posts</TabsTrigger>
+                  <TabsTrigger value="firms">Prop Firms</TabsTrigger>
+              </TabsList>
+              <TabsContent value="blog">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle>Blog Posts</CardTitle>
+                            <CardDescription>A list of all blog posts in your database.</CardDescription>
+                        </div>
+                        <Button asChild>
+                            <Link href="/admin/dashboard/edit">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                New Post
+                            </Link>
+                        </Button>
                     </div>
-                    <Button asChild>
-                        <Link href="/admin/dashboard/edit">
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            New Post
-                        </Link>
-                    </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Author</TableHead>
-                      <TableHead>Created At</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {posts && posts.length > 0 ? (
-                      posts.map(post => (
-                        <TableRow key={post.id}>
-                          <TableCell className="font-medium">{post.title}</TableCell>
-                          <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
-                          <TableCell>{post.author}</TableCell>
-                          <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
-                          <TableCell className="text-right">
-                            <Button asChild variant="ghost" size="icon">
-                                <Link href={`/admin/dashboard/edit?id=${post.id}`}>
-                                    <Edit className="h-4 w-4" />
-                                </Link>
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the post.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deleteBlogPost(post.id)}>Continue</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </TableCell>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Category</TableHead>
+                          <TableHead>Author</TableHead>
+                          <TableHead>Created At</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center">
-                          <p className="mb-4">No posts yet.</p>
-                          <Button onClick={seedBlogPosts}>Add Sample Posts</Button>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="firms">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Prop Firm</CardTitle>
-                <CardDescription>Fill out the form to add a new prop firm.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PropFirmForm onSubmit={handleAddPropFirm} />
-              </CardContent>
-            </Card>
-            <Card className="mt-8">
-              <CardHeader>
-                <CardTitle>Existing Prop Firms</CardTitle>
-                <CardDescription>A list of all prop firms in your database.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {firms && firms.length > 0 ? (
-                      firms.map(firm => (
-                        <TableRow key={firm.id}>
-                          <TableCell className="font-medium">{firm.name}</TableCell>
-                          <TableCell><Badge variant="secondary">{firm.type}</Badge></TableCell>
-                          <TableCell className="text-right">
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <Trash2 className="h-4 w-4 text-destructive" />
+                      </TableHeader>
+                      <TableBody>
+                        {posts && posts.length > 0 ? (
+                          posts.map(post => (
+                            <TableRow key={post.id}>
+                              <TableCell className="font-medium">{post.title}</TableCell>
+                              <TableCell><Badge variant="secondary">{post.category}</Badge></TableCell>
+                              <TableCell>{post.author}</TableCell>
+                              <TableCell>{post.createdAt ? format(post.createdAt.toDate(), 'PPpp') : 'Date not available'}</TableCell>
+                              <TableCell className="text-right">
+                                <Button asChild variant="ghost" size="icon">
+                                    <Link href={`/admin/dashboard/edit?id=${post.id}`}>
+                                        <Edit className="h-4 w-4" />
+                                    </Link>
                                 </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the prop firm.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </TableCell>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the post.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => deleteBlogPost(post.id)}>Continue</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={5} className="h-24 text-center">
+                              <p className="mb-4">No posts yet.</p>
+                              <Button onClick={seedBlogPosts}>Add Sample Posts</Button>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="firms">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle>Prop Firms</CardTitle>
+                            <CardDescription>A list of all prop firms in your database.</CardDescription>
+                        </div>
+                        <Button onClick={handleSyncPropFirms} disabled={isSyncing}>
+                            <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                            {isSyncing ? 'Syncing...' : 'Sync with Data Source'}
+                        </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Type</TableHead>
+                           <TableHead>Rating</TableHead>
+                           <TableHead>Review Count</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={3} className="h-24 text-center">
-                          <p className="mb-4">No prop firms yet.</p>
-                          <Button onClick={seedPropFirms}>Seed from JSON</Button>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-      </Tabs>
-    </>
+                      </TableHeader>
+                      <TableBody>
+                        {firms && firms.length > 0 ? (
+                          firms.map(firm => (
+                            <TableRow key={firm.id}>
+                              <TableCell className="font-medium">{firm.name}</TableCell>
+                              <TableCell><Badge variant="secondary">{firm.type}</Badge></TableCell>
+                              <TableCell>{firm.review.rating}/5</TableCell>
+                              <TableCell>{firm.review.count}</TableCell>
+                              <TableCell className="text-right">
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the prop firm.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => deletePropFirm(firm.id)}>Continue</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={5} className="h-24 text-center">
+                              <p>No prop firms found.</p>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+          </Tabs>
+        </main>
+        <aside className="hidden md:block md:col-span-1">
+          {/* Right sidebar content goes here */}
+        </aside>
+      </div>
+    </div>
   );
 }
