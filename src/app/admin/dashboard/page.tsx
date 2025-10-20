@@ -30,6 +30,7 @@ import { useLoading } from '@/context/loading-context';
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 function slugify(text: string) {
   return text
@@ -130,44 +131,22 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const deleteBlogPost = async (postId: string) => {
+  const deleteBlogPost = (postId: string) => {
     if (!firestore) return;
-    setIsLoading(true);
-    try {
-        await deleteDoc(doc(firestore, 'blogPosts', postId));
-        toast({
-            title: 'Success',
-            description: 'Blog post deleted successfully.',
-        });
-    } catch (error: any) {
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Failed to delete post: ' + error.message,
-        });
-    } finally {
-        setIsLoading(false);
-    }
+    deleteDocumentNonBlocking(doc(firestore, 'blogPosts', postId));
+    toast({
+        title: 'Success',
+        description: 'Blog post deleted successfully.',
+    });
   };
 
-  const deletePropFirm = async (firmId: string) => {
+  const deletePropFirm = (firmId: string) => {
     if (!firestore) return;
-    setIsLoading(true);
-    try {
-        await deleteDoc(doc(firestore, 'prop_firms', firmId));
-        toast({
-            title: 'Success',
-            description: 'Prop firm deleted successfully.',
-        });
-    } catch (error: any) {
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Failed to delete prop firm: ' + error.message,
-        });
-    } finally {
-        setIsLoading(false);
-    }
+    deleteDocumentNonBlocking(doc(firestore, 'prop_firms', firmId));
+    toast({
+        title: 'Success',
+        description: 'Prop firm deleted successfully.',
+    });
   };
 
   const handleJsonUpload = (event: React.ChangeEvent<HTMLInputElement>) => {

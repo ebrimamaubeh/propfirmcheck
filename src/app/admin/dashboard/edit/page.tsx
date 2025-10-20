@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { BlogPost } from '@/lib/types';
 import { useLoading } from '@/context/loading-context';
+import { addDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 function slugify(text: string) {
   return text
@@ -87,11 +88,10 @@ function EditPostForm() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!firestore) return;
         setIsSaving(true);
-        setIsLoading(true);
         
         const postData = {
             title,
@@ -102,29 +102,21 @@ function EditPostForm() {
             updatedAt: serverTimestamp(),
         };
 
-        try {
-            if (postId) {
-                const docRef = doc(firestore, 'blogPosts', postId);
-                await setDoc(docRef, postData, { merge: true });
-                toast({ title: "Success", description: "Post updated successfully." });
-            } else {
-                const collectionRef = collection(firestore, 'blogPosts');
-                await addDoc(collectionRef, {
-                    ...postData,
-                    createdAt: serverTimestamp(),
-                });
-                toast({ title: "Success", description: "Post created successfully." });
-            }
-            router.push('/admin/dashboard');
-        } catch (error: any) {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: `Failed to save post: ${error.message}`
+        if (postId) {
+            const docRef = doc(firestore, 'blogPosts', postId);
+            setDocumentNonBlocking(docRef, postData, { merge: true });
+            toast({ title: "Success", description: "Post updated successfully." });
+        } else {
+            const collectionRef = collection(firestore, 'blogPosts');
+            addDocumentNonBlocking(collectionRef, {
+                ...postData,
+                createdAt: serverTimestamp(),
             });
-            setIsSaving(false);
-            setIsLoading(false);
+            toast({ title: "Success", description: "Post created successfully." });
         }
+        
+        // Navigate away immediately. The write happens in the background.
+        router.push('/admin/dashboard');
     };
 
     return (

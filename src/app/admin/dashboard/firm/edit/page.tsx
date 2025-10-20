@@ -4,21 +4,21 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { useFirestore } from '@/firebase';
-import { doc, setDoc, addDoc, collection, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { PropFirm } from '@/lib/types';
 import { useLoading } from '@/context/loading-context';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const ruleSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -123,30 +123,20 @@ function EditFirmForm() {
     router.back();
   }
 
-  const onSubmit = async (data: FirmFormData) => {
+  const onSubmit = (data: FirmFormData) => {
     if (!firestore) return;
 
-    setIsLoading(true);
-    try {
-      const firmDataToSave = {
-        ...data,
-        // Convert the comma-separated platform string back to an array
-        platform: data.platform.split(',').map(p => p.trim()),
-      };
+    const firmDataToSave = {
+      ...data,
+      // Convert the comma-separated platform string back to an array
+      platform: data.platform.split(',').map(p => p.trim()),
+    };
 
-      const docRef = doc(firestore, 'prop_firms', data.id);
-      await setDoc(docRef, firmDataToSave, { merge: !isNewFirm });
+    const docRef = doc(firestore, 'prop_firms', data.id);
+    setDocumentNonBlocking(docRef, firmDataToSave, { merge: !isNewFirm });
 
-      toast({ title: 'Success', description: `Prop firm ${isNewFirm ? 'created' : 'updated'} successfully.` });
-      router.push('/admin/dashboard');
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: `Failed to save prop firm: ${error.message}`,
-      });
-      setIsLoading(false);
-    }
+    toast({ title: 'Success', description: `Prop firm ${isNewFirm ? 'created' : 'updated'} successfully.` });
+    router.push('/admin/dashboard');
   };
 
   if (isUserLoading) return null;
@@ -186,9 +176,9 @@ function EditFirmForm() {
                   <FormItem>
                     <FormLabel>Firm ID</FormLabel>
                     <FormControl>
-                      <Input placeholder="topstep" {...field} disabled />
+                      <Input placeholder="topstep" {...field} disabled={!isNewFirm} />
                     </FormControl>
-                     <FormDescription>This is auto-generated and cannot be changed.</FormDescription>
+                     <FormDescription>This is auto-generated and cannot be changed after creation.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -221,7 +211,7 @@ function EditFirmForm() {
                                   checked={field.value?.includes(item)}
                                   onCheckedChange={(checked) => {
                                     return checked
-                                      ? field.onChange([...field.value, item])
+                                      ? field.onChange([...(field.value || []), item])
                                       : field.onChange(
                                           field.value?.filter(
                                             (value) => value !== item
