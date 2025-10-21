@@ -2,9 +2,15 @@
 'use client';
 import Link from 'next/link';
 import { useLoading } from '@/context/loading-context';
+import { useState, useEffect } from 'react';
 
 export function Footer() {
   const { setIsLoading } = useLoading();
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   const handleLinkClick = () => {
     setIsLoading(true);
@@ -39,7 +45,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-6 text-center">
-          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Prop Firm Check. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; {currentYear} Prop Firm Check. All rights reserved.</p>
         </div>
       </div>
     </footer>
