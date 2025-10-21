@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-home",
+      "description": "Abstract financial chart background",
+      "imageUrl": "https://images.unsplash.com/photo-1652158699757-07fafa99fe96?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmaW5hbmNlJTIwdHJhZGluZ3xlbnwwfHx8fDE3NjEwNDQ4OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "finance trading"
+    },
+    {
+      "id": "blog-futures",
+      "description": "Digital screen with stock market data",
+      "imageUrl": "https://images.unsplash.com/photo-1651340981821-b519ad14da7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzdG9jayUyMG1hcmtldHxlbnwwfHx8fDE3NjA5NTE2NTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stock market"
+    },
+    {
+      "id": "blog-forex",
+      "description": "Currency exchange concept with glowing lines",
+      "imageUrl": "https://images.unsplash.com/photo-1621409618548-46a217334b00?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Y3VycmVuY3klMjBleGNoYW5nZXxlbnwwfHx8fDE3NjA5NjgyNDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "currency exchange"
+    },
+    {
+      "id": "blog-proptrading",
+      "description": "Trader at a desk with multiple monitors",
+      "imageUrl": "https://images.unsplash.com/photo-1594501252028-2bb7b21d01b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0cmFkZXIlMjBkZXNrfGVufDB8fHx8MTc2MTA1NjE0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "trader desk"
+    }
+  ]
 }

@@ -5,10 +5,14 @@ import type { PropFirm } from '@/lib/types';
 import { useCollection, useMemoFirebase, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import { useLoading } from '@/context/loading-context';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const firestore = useFirestore();
   const { setIsLoading } = useLoading();
+  const heroImage = PlaceHolderImages[0];
 
   const firmsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -21,16 +25,37 @@ export default function Home() {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
 
+  const scrollToTable = () => {
+    const tableElement = document.getElementById('prop-firm-table');
+    if (tableElement) {
+      tableElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
-      <section className="text-center mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 font-headline">The Prop Firm That Best Matches You</h1>
-        <p className="max-w-2xl mx-auto text-muted-foreground md:text-lg">
-          We've compiled and reviewed the best proprietary trading firms to help you find the perfect fit for your trading style and goals.
-        </p>
+      <section className="relative h-[60vh] -mt-12 md:-mt-20 flex items-center justify-center text-center text-white mb-12 rounded-lg overflow-hidden">
+        {heroImage && (
+            <Image
+                src={heroImage.imageUrl}
+                alt={heroImage.description}
+                fill
+                className="object-cover"
+                data-ai-hint={heroImage.imageHint}
+                priority
+            />
+        )}
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="relative z-10 p-4">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 font-headline drop-shadow-md">The Prop Firm That Best Matches You</h1>
+          <p className="max-w-3xl mx-auto text-lg md:text-xl text-white/90 drop-shadow-sm mb-8">
+            We've compiled and reviewed the best proprietary trading firms to help you find the perfect fit for your trading style and goals.
+          </p>
+          <Button size="lg" onClick={scrollToTable}>View Firms</Button>
+        </div>
       </section>
 
-      <section>
+      <section id="prop-firm-table">
         {isLoading || !firms ? (
           null
         ) : (

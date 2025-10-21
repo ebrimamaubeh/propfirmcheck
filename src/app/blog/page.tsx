@@ -1,8 +1,8 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
@@ -14,6 +14,7 @@ import type { BlogPost } from '@/lib/types';
 import { format } from 'date-fns';
 import { useLoading } from '@/context/loading-context';
 import { BlogLayout } from '@/components/layout/blog-layout';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function BlogPage() {
   const firestore = useFirestore();
@@ -39,7 +40,6 @@ export default function BlogPage() {
   const categories = useMemo(() => {
     if (!posts) return [];
     const allCategories = ['All', ...new Set(posts.map(p => p.category))];
-    // The "All" category is handled by setting activeCategory to null, so we can pass it to the layout.
     return allCategories;
   }, [posts]);
 
@@ -55,6 +55,8 @@ export default function BlogPage() {
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category === 'All' ? null : category);
   };
+
+  const blogPostImages = PlaceHolderImages.slice(1, 4);
 
   return (
     <BlogLayout
@@ -84,25 +86,37 @@ export default function BlogPage() {
         null
       ) : filteredPosts.length > 0 ? (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-          {filteredPosts.map(post => (
-            <Link href={`/blog/${post.slug}`} key={post.id} onClick={handleLinkClick}>
-              <Card className="h-full hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                  <CardDescription>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-                      <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : '...'}</span>
-                      <span>&middot;</span>
-                      <span>By {post.author}</span>
+          {filteredPosts.map((post, index) => {
+             const image = blogPostImages[index % blogPostImages.length];
+             return (
+              <Link href={`/blog/${post.slug}`} key={post.id} onClick={handleLinkClick} className="group">
+                <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
+                  {image && (
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={image.imageUrl}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        data-ai-hint={image.imageHint}
+                      />
                     </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Badge variant="secondary">{post.category}</Badge>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                  )}
+                  <CardHeader>
+                    <Badge variant="secondary" className="w-fit mb-2">{post.category}</Badge>
+                    <CardTitle className="line-clamp-2">{post.title}</CardTitle>
+                    <CardDescription>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                        <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : '...'}</span>
+                        <span>&middot;</span>
+                        <span>By {post.author}</span>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+             )
+            })}
         </div>
       ) : (
         <div className="text-center col-span-full py-16">
