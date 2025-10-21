@@ -1,5 +1,8 @@
 
-'use client';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, limit } from 'firebase/firestore';
@@ -8,14 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import type { BlogPost } from '@/lib/types';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useLoading } from '@/context/loading-context';
 import ReactMarkdown from 'react-markdown';
-import type { Metadata } from 'next';
-import Head from 'next/head';
+
 
 // This file is now a Server Component that renders a Client Component.
 // This allows us to use `generateMetadata` which can only be exported from a server component.
@@ -33,6 +34,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 function BlogPostDetails() {
+  'use client';
   const { slug } = useParams() as { slug: string };
   const firestore = useFirestore();
   const { setIsLoading: setAppIsLoading, setIsLoading } = useLoading();

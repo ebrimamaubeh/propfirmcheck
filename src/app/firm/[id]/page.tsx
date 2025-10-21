@@ -1,5 +1,6 @@
 
-'use client'
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
@@ -12,13 +13,10 @@ import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
 import { useLoading } from '@/context/loading-context';
-import { useEffect, Suspense } from 'react';
-import type { Metadata } from 'next';
+import { useEffect } from 'react';
 
 // This function can't be in a client component.
-// We will move the client logic to a sub-component.
-// This page.tsx will be a Server Component that renders a Client Component.
-
+// This page.tsx is now a Server Component that renders a Client Component.
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const id = params.id;
   const firmName = id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -32,7 +30,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
+
 function FirmDetails() {
+  'use client'
   const params = useParams();
   const id = params.id as string;
   const firestore = useFirestore();
