@@ -25,6 +25,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
         <LoadingProvider>
             <FirebaseClientProvider>
                 <SidebarProvider>
+                    {/* The suspense boundary and route change listener are no longer strictly necessary with the hook-based loading, but can serve as a fallback. */}
                     <Suspense fallback={null}>
                         <RouteChangeListener />
                     </Suspense>
