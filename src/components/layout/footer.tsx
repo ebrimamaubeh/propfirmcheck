@@ -12,7 +12,7 @@ export function Footer() {
 
   return (
     <footer className="bg-secondary/50 border-t">
-      <div className="container py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <h3 className="font-bold mb-4 font-headline">Prop Firm Check</h3>
