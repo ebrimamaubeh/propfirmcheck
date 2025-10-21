@@ -9,13 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
+import { doc } from 'firebase/firestore';
 
 // Client-specific imports are now inside the client component
 import { useParams } from 'next/navigation';
 import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { useLoading } from '@/context/loading-context';
 import { useEffect } from 'react';
-import { doc } from 'firebase/firestore';
 
 
 // This function can't be in a client component.
