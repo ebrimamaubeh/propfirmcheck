@@ -228,7 +228,7 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                                 </div>
                             </TableCell>
                             <TableCell className="text-right">
-                            <Button asChild variant="ghost" size="sm">
+                            <Button asChild variant="outline" size="sm">
                                 <Link href={`/firm/${firm.id}`} onClick={handleLinkClick}>
                                 More <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
