@@ -2,11 +2,10 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { doc } from 'firebase/firestore';
 import type { PropFirm } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
@@ -16,6 +15,8 @@ import { useParams } from 'next/navigation';
 import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { useLoading } from '@/context/loading-context';
 import { useEffect } from 'react';
+import { doc } from 'firebase/firestore';
+
 
 // This function can't be in a client component.
 // This page.tsx is now a Server Component that renders a Client Component.
