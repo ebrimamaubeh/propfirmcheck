@@ -11,14 +11,14 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useLoading } from '@/context/loading-context';
 import ReactMarkdown from 'react-markdown';
 import type { Metadata } from 'next';
 import Head from 'next/head';
 
-// Note: True dynamic server-side metadata generation requires server-side data fetching.
-// This is a client-side implementation which means metadata might not be available for the first paint.
+// This file is now a Server Component that renders a Client Component.
+// This allows us to use `generateMetadata` which can only be exported from a server component.
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const slug = params.slug;
   const title = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default function BlogPostPage() {
+function BlogPostDetails() {
   const { slug } = useParams() as { slug: string };
   const firestore = useFirestore();
   const { setIsLoading: setAppIsLoading, setIsLoading } = useLoading();
@@ -58,13 +58,6 @@ export default function BlogPostPage() {
       setPost(posts?.[0]);
     }
   }, [posts, isLoading]);
-  
-  useEffect(() => {
-      if (!isLoading && !post) {
-          // notFound(); We removed this to prevent 404 errors during data fetching issues.
-      }
-  }, [isLoading, post]);
-
 
   if (isLoading || post === undefined) {
     return null; // Global loading spinner is active
@@ -108,7 +101,6 @@ export default function BlogPostPage() {
     }
   };
 
-
   return (
     <>
       <Head>
@@ -148,4 +140,12 @@ export default function BlogPostPage() {
       </div>
     </>
   );
+}
+
+export default function BlogPostPage() {
+    return (
+        <Suspense fallback={null}>
+            <BlogPostDetails />
+        </Suspense>
+    );
 }

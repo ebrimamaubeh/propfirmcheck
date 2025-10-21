@@ -1,7 +1,7 @@
 
 'use client'
 import Link from 'next/link';
-import { useParams, notFound } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { PropFirm } from '@/lib/types';
@@ -12,16 +12,14 @@ import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
 import { useLoading } from '@/context/loading-context';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import type { Metadata } from 'next';
 
-// This component now handles Metadata generation
+// This function can't be in a client component.
+// We will move the client logic to a sub-component.
+// This page.tsx will be a Server Component that renders a Client Component.
+
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  // This function would ideally fetch data on the server.
-  // Since we're client-side fetching, we can't do that directly here.
-  // We'll set a generic title and description, which will be updated on the client
-  // if you were to implement a client-side meta tag update solution.
-  // For true SSR SEO, you'd fetch this data on the server.
   const id = params.id;
   const firmName = id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
@@ -34,8 +32,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-
-export default function FirmDetailsPage() {
+function FirmDetails() {
   const params = useParams();
   const id = params.id as string;
   const firestore = useFirestore();
@@ -55,13 +52,6 @@ export default function FirmDetailsPage() {
   useEffect(() => {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
-  
-  useEffect(() => {
-      if (!isLoading && !firm) {
-          // notFound(); We removed this to prevent 404 errors during data fetching issues.
-      }
-  }, [isLoading, firm]);
-
 
   if (isLoading) {
     return null; // The global loading spinner is active
@@ -160,4 +150,12 @@ export default function FirmDetailsPage() {
       </div>
     </>
   );
+}
+
+export default function FirmDetailsPage() {
+    return (
+        <Suspense fallback={null}>
+            <FirmDetails />
+        </Suspense>
+    );
 }
