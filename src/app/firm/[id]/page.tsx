@@ -13,6 +13,27 @@ import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
 import { useLoading } from '@/context/loading-context';
 import { useEffect } from 'react';
+import type { Metadata } from 'next';
+
+// This component now handles Metadata generation
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  // This function would ideally fetch data on the server.
+  // Since we're client-side fetching, we can't do that directly here.
+  // We'll set a generic title and description, which will be updated on the client
+  // if you were to implement a client-side meta tag update solution.
+  // For true SSR SEO, you'd fetch this data on the server.
+  const id = params.id;
+  const firmName = id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+  return {
+    title: `${firmName} | Prop Firm Review`,
+    description: `Detailed review, rules, and information for ${firmName}. Find out if it's the right prop firm for you.`,
+    alternates: {
+      canonical: `/firm/${id}`,
+    },
+  };
+}
+
 
 export default function FirmDetailsPage() {
   const params = useParams();
@@ -34,14 +55,28 @@ export default function FirmDetailsPage() {
   useEffect(() => {
     setIsLoading(isLoading);
   }, [isLoading, setIsLoading]);
+  
+  useEffect(() => {
+      if (!isLoading && !firm) {
+          // notFound(); We removed this to prevent 404 errors during data fetching issues.
+      }
+  }, [isLoading, firm]);
+
 
   if (isLoading) {
     return null; // The global loading spinner is active
   }
 
   if (!firm) {
-    // Render nothing for now, to avoid triggering 404
-    return null;
+    return (
+        <div className="text-center">
+            <h2 className="text-2xl font-bold">Firm Not Found</h2>
+            <p className="text-muted-foreground">We couldn't find the firm you were looking for.</p>
+            <Button asChild className="mt-4">
+                <Link href="/">Back to List</Link>
+            </Button>
+        </div>
+    );
   }
 
   return (
@@ -56,37 +91,37 @@ export default function FirmDetailsPage() {
       </div>
       <div className="space-y-8">
         <Card>
-          <CardHeader className="flex flex-col md:flex-row items-start justify-between gap-4">
-            <div className="flex-1">
-              <CardTitle className="text-3xl font-headline">{firm.name}</CardTitle>
-              <CardDescription>
-                <div className="flex flex-wrap items-center gap-4 mt-2">
-                  <StarRating rating={firm.review.rating} />
-                  <span className="text-sm text-muted-foreground">{firm.review.rating}/5 ({firm.review.count} reviews)</span>
-                  <div className="flex gap-2">
-                    {firm.type.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}
+          <CardHeader>
+             <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+              <div className="flex-1">
+                <CardTitle className="text-3xl font-headline">{firm.name}</CardTitle>
+                <CardDescription>
+                  <div className="flex flex-wrap items-center gap-4 mt-2">
+                    <StarRating rating={firm.review.rating} />
+                    <span className="text-sm text-muted-foreground">{firm.review.rating}/5 ({firm.review.count} reviews)</span>
+                    <div className="flex gap-2">
+                      {firm.type.map(t => <Badge variant="secondary" key={t}>{t}</Badge>)}
+                    </div>
                   </div>
+                </CardDescription>
+              </div>
+              <div className="shrink-0">
+                <h4 className="font-semibold mb-2 text-right">Promo Code</h4>
+                <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
+                    <span className="font-mono text-lg font-bold text-primary">CHECK</span>
+                    <CopyButton textToCopy="CHECK" />
                 </div>
-              </CardDescription>
-            </div>
-            <div className="shrink-0">
-              <h4 className="font-semibold mb-2 text-right">Promo Code</h4>
-              <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
-                  <span className="font-mono text-lg font-bold text-primary">CHECK</span>
-                  <CopyButton textToCopy="CHECK" />
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">In business for {firm.yearsInBusiness} years, offering up to ${firm.maxAllocation.toLocaleString()} in allocation.</p>
-          </CardContent>
-          <CardFooter>
+            <p className="text-muted-foreground mb-6">In business for {firm.yearsInBusiness} years, offering up to ${firm.maxAllocation.toLocaleString()} in allocation.</p>
              <Button asChild size="lg" className="w-full">
               <a href={firm.referralLink} target="_blank" rel="noopener noreferrer">
                 Visit {firm.name} <ArrowUpRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
-          </CardFooter>
+          </CardContent>
         </Card>
         
         <Card>
