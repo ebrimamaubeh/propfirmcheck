@@ -2,8 +2,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { PropFirm } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -12,6 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import StarRating from '@/components/star-rating';
 import CopyButton from '@/components/copy-button';
+
+// Client-specific imports are now inside the client component
+import { useParams } from 'next/navigation';
+import { useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { useLoading } from '@/context/loading-context';
 import { useEffect } from 'react';
 
