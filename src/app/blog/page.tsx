@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -7,7 +8,7 @@ import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
 import type { BlogPost } from '@/lib/types';
@@ -15,6 +16,7 @@ import { format } from 'date-fns';
 import { useLoading } from '@/context/loading-context';
 import { BlogLayout } from '@/components/layout/blog-layout';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { motion } from 'framer-motion';
 
 export default function BlogPage() {
   const firestore = useFirestore();
@@ -89,32 +91,38 @@ export default function BlogPage() {
           {filteredPosts.map((post, index) => {
              const image = blogPostImages[index % blogPostImages.length];
              return (
-              <Link href={`/blog/${post.slug}`} key={post.id} onClick={handleLinkClick} className="group">
-                <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
-                  {image && (
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={image.imageUrl}
-                        alt={post.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        data-ai-hint={image.imageHint}
-                      />
-                    </div>
-                  )}
-                  <CardHeader>
-                    <Badge variant="secondary" className="w-fit mb-2">{post.category}</Badge>
-                    <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                    <CardDescription>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-                        <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : '...'}</span>
-                        <span>&middot;</span>
-                        <span>By {post.author}</span>
+              <motion.div
+                key={post.id}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <Link href={`/blog/${post.slug}`} onClick={handleLinkClick} className="group block">
+                  <Card className="h-full overflow-hidden transition-shadow hover:shadow-xl">
+                    {image && (
+                      <div className="relative h-48 w-full overflow-hidden">
+                        <Image
+                          src={image.imageUrl}
+                          alt={post.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          data-ai-hint={image.imageHint}
+                        />
                       </div>
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
+                    )}
+                    <CardHeader>
+                      <Badge variant="secondary" className="w-fit mb-2">{post.category}</Badge>
+                      <CardTitle className="line-clamp-2">{post.title}</CardTitle>
+                      <CardDescription>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                          <span>{post.createdAt ? format(post.createdAt.toDate(), 'MMMM d, yyyy') : '...'}</span>
+                          <span>&middot;</span>
+                          <span>By {post.author}</span>
+                        </div>
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              </motion.div>
              )
             })}
         </div>

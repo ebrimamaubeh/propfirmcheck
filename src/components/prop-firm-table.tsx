@@ -112,6 +112,8 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
     return sortConfig.direction === 'ascending' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />;
   };
 
+  const MotionTableRow = motion(TableRow);
+
   return (
     <Card className="w-full shadow-lg">
       <CardContent className="p-4 md:p-6">
@@ -194,7 +196,13 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                 paginatedFirms.map((firm) => {
                     const firmTypes = Array.isArray(firm.type) ? firm.type : [firm.type];
                     return (
-                        <TableRow key={firm.id} className="hover:bg-muted/50">
+                        <MotionTableRow 
+                            key={firm.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            whileHover={{ backgroundColor: 'hsl(var(--muted))' }}
+                            transition={{ duration: 0.3 }}
+                        >
                             <TableCell className="font-medium">
                             <div className="flex flex-col">
                                 <span className="font-semibold whitespace-nowrap">{firm.name}</span>
@@ -226,7 +234,7 @@ export default function PropFirmTable({ firms }: { firms: PropFirm[] }) {
                                 </Link>
                             </Button>
                             </TableCell>
-                        </TableRow>
+                        </MotionTableRow>
                     );
                 })
               ) : (
