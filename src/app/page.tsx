@@ -1,3 +1,4 @@
+
 'use client'
 import { useEffect } from 'react';
 import PropFirmTable from '@/components/prop-firm-table';
@@ -22,7 +23,33 @@ export default function Home() {
   const { data: firms, isLoading } = useCollection<PropFirm>(firmsQuery);
 
   useEffect(() => {
-    setIsLoading(isLoading);
+    // This effect manages the global loading spinner state based on the hook's loading status.
+    let spinnerTimeout: NodeJS.Timeout;
+    let failsafeTimeout: NodeJS.Timeout;
+
+    if (isLoading) {
+      // Only show the spinner if loading takes longer than 200ms.
+      // This prevents a brief "flash" of the spinner if data loads instantly from cache.
+      spinnerTimeout = setTimeout(() => {
+        setIsLoading(true);
+      }, 200);
+
+      // Failsafe: Ensure the spinner is turned off after 3 seconds, regardless of state.
+      failsafeTimeout = setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+
+    } else {
+      // If loading is finished, immediately turn off the spinner.
+      setIsLoading(false);
+    }
+
+    // Cleanup function to clear timeouts if the component unmounts
+    // or if the dependencies (isLoading) change before the timeouts fire.
+    return () => {
+      clearTimeout(spinnerTimeout);
+      clearTimeout(failsafeTimeout);
+    };
   }, [isLoading, setIsLoading]);
 
   const scrollToTable = () => {
@@ -56,10 +83,10 @@ export default function Home() {
       </section>
 
       <section id="prop-firm-table">
-        {isLoading || !firms ? (
+        {isLoading && !firms ? (
           null
         ) : (
-          <PropFirmTable firms={firms} />
+          <PropFirmTable firms={firms || []} />
         )}
       </section>
     </>
