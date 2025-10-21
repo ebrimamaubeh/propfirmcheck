@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useLoading } from '@/context/loading-context';
@@ -15,9 +16,9 @@ export function LoadingSpinner() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
         >
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 p-4 bg-background/80 backdrop-blur-sm rounded-lg pointer-events-auto">
             <Loader className="h-12 w-12 animate-spin text-primary" />
             <p className="text-muted-foreground">Loading...</p>
           </div>
