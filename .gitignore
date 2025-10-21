@@ -35,4 +35,4 @@ yarn-error.log*
 next-env.d.ts
 
 # mau added files here...
-/src/firebase/config.ts
+/src/firebase/*
