@@ -2,4 +2,5 @@
 
 This is a NextJS starter in Firebase Studio.
 
-To get started, take a look at src/app/page.tsx.
+I made my first commit after creating seo instructions. 
+I will not work on more frontend stuffs. 
