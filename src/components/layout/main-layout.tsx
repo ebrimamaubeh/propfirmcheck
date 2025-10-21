@@ -40,7 +40,7 @@ export function MainLayout({ children }: { children: ReactNode }) {
             <CardContent className="p-4">
               <h3 className="font-semibold mb-2">Featured Firm</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Topstep is a leader in futures trading evaluations. Get funded and trade with their capital.
+                <b>Topstep<b></b> is a leader in futures trading evaluations. Get funded and trade with their capital.
               </p>
               <Button asChild className="w-full" size="sm">
                 <Link href="/firm/topstep">
